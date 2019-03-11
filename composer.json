@@ -1,0 +1,47 @@
+{
+    "name": "oliuz/teamwork",
+    "license": "MIT",
+    "description": "User to Team associations for the Laravel 5 Framework",
+    "keywords": ["Teams","Invite"],
+    "homepage": "http://github.com/mpociot/teamwork",
+    "authors": [
+        {
+            "name": "Marcel Pociot",
+            "email": "m.pociot@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/mpociot/teamwork/issues",
+        "source": "https://github.com/mpociot/teamwork"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable" : true,
+    "require": {
+        "php": ">=5.6.4",
+        "laravel/framework": "5.5.*|5.6.*|5.7.*|5.8.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.1",
+        "mockery/mockery": "dev-master",
+        "illuminate/database": "~5.0",
+        "orchestra/testbench": "3.4.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Mpociot\\Teamwork": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/models/User.php",
+            "tests/models/Task.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mpociot\\Teamwork\\TeamworkServiceProvider"
+            ]
+        }
+    }
+}
