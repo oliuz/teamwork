@@ -1,6 +1,6 @@
 # Teamwork (Laravel 5 Package)
 
-[![Latest Version](https://img.shields.io/packagist/v/mpociot/teamwork.svg)](https://github.com/mpociot/teamwork/releases)
+[![Latest Version](https://img.shields.io/packagist/v/mpociot/teamwork.svg)](https://github.com/oliuz/teamwork/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://travis-ci.org/mpociot/teamwork.svg)](https://travis-ci.org/mpociot/teamwork)
 [![codecov.io](https://codecov.io/github/mpociot/teamwork/coverage.svg?branch=master)](https://codecov.io/github/mpociot/teamwork?branch=master)
@@ -34,7 +34,7 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 
 ## Installation
 
-## For Laravel 5.4
+## For Laravel 5.4|5.8
 
     "mpociot/teamwork": "~5.0"
 
@@ -53,7 +53,7 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 
 Add the version you need to your composer.json. Then run `composer install` or `composer update`.
 
-(or run `composer require mpociot/teamwork` if you prefere that)
+(or run `composer require oliuz/teamwork` if you prefere that)
 
 Then in your `config/app.php` add
 
