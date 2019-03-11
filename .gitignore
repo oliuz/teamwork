@@ -7,6 +7,10 @@ yarn-error.log
 bootstrap/compiled.php
 app/storage/
 
+# PHPStorm Settings
+/.idea
+/.phpintel
+
 # Laravel 5 & Lumen specific
 public/storage
 public/hot
