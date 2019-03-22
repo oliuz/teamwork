@@ -82,6 +82,12 @@ class MakeTeamwork extends Command
                 )
             );
 
+            $this->info('Installed TeamStoreRequest.');
+            file_put_contents(
+                app_path('Http/Requests/Teamwork/TeamStoreRequest.php'),
+                $this->compileRequestStub('TeamStoreRequest')
+            );
+
             $this->info('Updated Routes File.');
             file_put_contents(
                // app_path('Http/routes.php'),
@@ -105,6 +111,9 @@ class MakeTeamwork extends Command
         }
         if (! is_dir(app_path('Listeners/Teamwork'))) {
             mkdir(app_path('Listeners/Teamwork'), 0755, true);
+        }
+        if (! is_dir(app_path('Http/Requests/Teamwork'))) {
+            mkdir(app_path('Http/Requests/Teamwork'), 0755, true);
         }
         if (! is_dir(base_path('resources/views/teamwork'))) {
             mkdir(base_path('resources/views/teamwork'), 0755, true);
@@ -143,6 +152,21 @@ class MakeTeamwork extends Command
             '{{namespace}}',
             $this->getAppNamespace(),
             file_get_contents(__DIR__.'/../../../stubs/controllers/'.$stubName.'.stub')
+        );
+    }
+
+    /**
+     * Compiles the HTTP request stubs.
+     *
+     * @param $stubName
+     * @return string
+     */
+    protected function compileRequestStub($stubName)
+    {
+        return str_replace(
+            '{{namespace}}',
+            $this->getAppNamespace(),
+            file_get_contents(__DIR__.'/../../../stubs/requests/'.$stubName.'.stub')
         );
     }
 }
