@@ -15,7 +15,6 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 - [Configuration](#configuration)
     - [User relation to teams](#user-relation-to-team)
     - [Models](#models)
-        - [Team](#team)
         - [User](#user)
 - [Usage](#usage)
     - [Scaffoling](#scaffolding)
@@ -36,30 +35,11 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 
 ## For Laravel 5.4|5.8
 
-    "mpociot/teamwork": "~5.0"
-
-## For Laravel 5.3
-
-    "mpociot/teamwork": "~4.0"
-
-## For Laravel 5.2
-
-    "mpociot/teamwork": "~3.0"
-
-## For Laravel 5.0 / 5.1
-
-    "mpociot/teamwork": "~2.0"
-
+    "oliuz/teamwork": "~5.0"
 
 Add the version you need to your composer.json. Then run `composer install` or `composer update`.
 
 (or run `composer require oliuz/teamwork` if you prefere that)
-
-Then in your `config/app.php` add
-
-    Mpociot\Teamwork\TeamworkServiceProvider::class,
-
-in the `providers` array.
 
 The `Teamwork` Facade will be installed automatically within the Service Provider.
 
@@ -100,31 +80,6 @@ This column will define the Team, the user is currently assigned to.
 <a name="models" />
 
 ### Models
-
-<a name="team" />
-
-#### Team
-
-Create a Team model inside `app/Team.php` using the following example:
-
-```php
-<?php namespace App;
-
-use Mpociot\Teamwork\TeamworkTeam;
-
-class Team extends TeamworkTeam
-{
-}
-```
-
-The `Team` model has two main attributes:
-
-- `owner_id` &mdash; Reference to the User model that owns this Team.
-- `name` &mdash; Human readable name for the Team.
-
-The `owner_id` is an optional attribute and is nullable in the database.
-
-When extending TeamworkTeam, remember to change the `team_model` variable in `config/teamwork.php` to your new model. For instance: `'team_model' => App\Team::class`
 
 <a name="user" />
 
@@ -193,13 +148,14 @@ The easiest way to give your new Laravel project Team abilities is by using the 
 php artisan make:teamwork
 ```
 
-This command will create all views, routes and controllers to make your new project team-ready.
+This command will create all views, routes, model and controllers to make your new project team-ready.
 
 Out of the box, the following parts will be created for you:
 
 * Team listing
 * Team creation / editing / deletion
 * Invite new members to teams
+* Team model
 
 Imagine it as a the `make:auth` command for Teamwork.
 
