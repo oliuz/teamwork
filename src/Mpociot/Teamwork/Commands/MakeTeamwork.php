@@ -95,6 +95,12 @@ class MakeTeamwork extends Command
                 file_get_contents(__DIR__.'/../../../stubs/routes.stub'),
                 FILE_APPEND
             );
+
+            $this->info('Installed Team Model.');
+            file_put_contents(
+                app_path('Models/Team.php'),
+                $this->compileModelStub('Team')
+            );
         }
         $this->comment('Teamwork scaffolding generated successfully!');
     }
@@ -114,6 +120,9 @@ class MakeTeamwork extends Command
         }
         if (! is_dir(app_path('Http/Requests/Teamwork'))) {
             mkdir(app_path('Http/Requests/Teamwork'), 0755, true);
+        }
+        if (! is_dir(app_path('Models'))) {
+            mkdir(app_path('Models'), 0755, true);
         }
         if (! is_dir(base_path('resources/views/teamwork'))) {
             mkdir(base_path('resources/views/teamwork'), 0755, true);
@@ -167,6 +176,21 @@ class MakeTeamwork extends Command
             '{{namespace}}',
             $this->getAppNamespace(),
             file_get_contents(__DIR__.'/../../../stubs/requests/'.$stubName.'.stub')
+        );
+    }
+
+    /**
+     * Compile the model stub.
+     *
+     * @param $stubName
+     * @return string
+     */
+    protected function compileModelStub($stubName)
+    {
+        return str_replace(
+            '{{namespace}}',
+            $this->getAppNamespace(),
+            file_get_contents(__DIR__.'/../../../stubs/models/'.$stubName.'.stub')
         );
     }
 }
