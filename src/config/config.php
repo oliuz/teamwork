@@ -10,7 +10,7 @@
  * @author   Marcel Pociot <m.pociot@gmail.com>
  * @license  MIT 
  * @link     http://github.com/mpociot/teamwork
- *
+ */
 
 return [
     /*
