@@ -3,9 +3,14 @@
 /**
  * This file is part of Teamwork
  *
- * @license MIT
- * @package Teamwork
- */
+ * PHP version 7.1
+ * 
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT 
+ * @link     http://github.com/mpociot/teamwork
+ *
 
 return [
     /*
