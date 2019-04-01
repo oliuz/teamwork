@@ -4,6 +4,7 @@ namespace {{namespace}}Http\Controllers\Teamwork;
 
 use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
 
 class TeamController extends Controller
@@ -46,8 +47,10 @@ class TeamController extends Controller
 
         $team = $teamModel::create([
             'name' => $request->name,
+            'slug' => Str::slug($request->name),
             'owner_id' => $request->user()->getKey()
         ]);
+        $team->slug = Str::slug($request->get('name'));
         $request->user()->attachTeam($team);
 
         return redirect(route('teams.index'));
@@ -103,6 +106,7 @@ class TeamController extends Controller
 
         $team = $teamModel::findOrFail($id);
         $team->name = $request->name;
+        'slug' => Str::slug($request->name),
         $team->save();
 
         return redirect(route('teams.index'));

@@ -6,7 +6,7 @@
 Route::group(['prefix' => 'teams', 'namespace' => 'Teamwork'], function()
 {
     Route::get('/', 'TeamController@index')->name('teams.index');
-    Route::get('create', 'TeamController@create')->name('teams.create');
+    //Route::get('create', 'TeamController@create')->name('teams.create');
     Route::post('teams', 'TeamController@store')->name('teams.store');
     Route::get('edit/{id}', 'TeamController@edit')->name('teams.edit');
     Route::put('edit/{id}', 'TeamController@update')->name('teams.update');

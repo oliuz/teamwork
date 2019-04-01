@@ -1,41 +1,34 @@
-@extends('layouts.app')
+<div class="modal fade" id="createModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">Create a new team</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form class="form-horizontal" method="post" action="{{route('teams.store')}}">
+                @csrf
+                <div class="modal-body">
 
-@section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Create a new team</div>
-                    <div class="panel-body">
-                        <form class="form-horizontal" method="post" action="{{route('teams.store')}}">
-                            {!! csrf_field() !!}
 
-                            <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                                <label class="col-md-4 control-label">Name</label>
+                    <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                        <label class="control-label">Name</label>
 
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="name" value="{{ old('name') }}">
 
-                                    @if ($errors->has('name'))
-                                        <span class="help-block">
+                        <input type="text" class="form-control" name="name" value="{{ old('name') }}" required>
+
+                        @if ($errors->has('name'))
+                            <span class="help-block">
                                         <strong>{{ $errors->first('name') }}</strong>
                                     </span>
-                                    @endif
-                                </div>
-                            </div>
+                        @endif
 
-
-                            <div class="form-group">
-                                <div class="col-md-6 col-md-offset-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-btn fa-save"></i>Save
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
+                    <button class="btn btn-primary btn-block">Save</button>
+
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-@endsection
+</div>
