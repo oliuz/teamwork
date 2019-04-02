@@ -74,6 +74,6 @@
     </div>
 
     <!-- Modal -->
-    @include('teamwork.modal')
+    @include('teamwork.create')
 
 @endsection
