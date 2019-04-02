@@ -1,6 +1,6 @@
 # Teamwork (Laravel 5 Package)
 
-[![Latest Version](https://img.shields.io/packagist/v/mpociot/teamwork.svg)](https://github.com/oliuz/teamwork/releases)
+[![Latest Version](https://img.shields.io/packagist/v/oliuz/teamwork.svg)](https://github.com/oliuz/teamwork/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://travis-ci.org/mpociot/teamwork.svg)](https://travis-ci.org/mpociot/teamwork)
 [![codecov.io](https://codecov.io/github/mpociot/teamwork/coverage.svg?branch=master)](https://codecov.io/github/mpociot/teamwork?branch=master)
