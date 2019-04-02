@@ -96,7 +96,7 @@ class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  {{namespace}}Http\Requests\Teamwork\TeamCreateRequest $request
+     * @param  {{namespace}}Http\Requests\Teamwork\TeamStoreRequest $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
@@ -106,7 +106,7 @@ class TeamController extends Controller
 
         $team = $teamModel::findOrFail($id);
         $team->name = $request->name;
-        'slug' => Str::slug($request->name),
+        $team->slug = Str::slug($request->name);
         $team->save();
 
         return redirect(route('teams.index'));
