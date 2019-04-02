@@ -1,5 +1,17 @@
 <?php namespace Mpociot\Teamwork;
 
+/**
+ * This file is part of Teamwork
+ *
+ * PHP version 7.1
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
+ */
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Mpociot\Teamwork\Traits\TeamworkTeamTrait;
