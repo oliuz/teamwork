@@ -80,8 +80,9 @@ trait UserHasTeams
      */
     public function isOwner()
     {
-        return ( $this->teams()->where( "owner_id", "=", $this->getKey() )->first() ) ? true : false;
-    }
+	    $CurrentTeam=$this->currentTeam['id'];
+		return ( $this->teams()->where('id',$CurrentTeam)->where( "owner_id", "=", $this->getKey() )->first() ) ? true : false;
+	}
 
     /**
      * Wrapper method for "isOwner"
