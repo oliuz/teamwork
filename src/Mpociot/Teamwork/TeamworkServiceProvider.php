@@ -35,9 +35,9 @@ class TeamworkServiceProvider extends ServiceProvider
     protected function publishConfig()
     {
         // Publish config files
-        $this->publishes( [
-            __DIR__ . '/../../config/config.php' => config_path( 'teamwork.php' ),
-        ] );
+        $this->publishes([
+            __DIR__ . '/../../config/config.php' => config_path('teamwork.php'),
+        ], 'teamwork-config');
     }
 
     /**
@@ -45,12 +45,12 @@ class TeamworkServiceProvider extends ServiceProvider
      */
     protected function publishMigration()
     {
-        if (! class_exists('TeamworkSetupTables')) {
+        if (!class_exists('TeamworkSetupTables')) {
             // Publish the migration
             $timestamp = date('Y_m_d_His', time());
             $this->publishes([
-                __DIR__.'/../../database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/'.$timestamp.'_teamwork_setup_tables.php'),
-              ], 'migrations');
+                __DIR__ . '/../../database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/' . $timestamp . '_teamwork_setup_tables.php'),
+            ], 'teamwork-migrations');
         }
     }
 
@@ -74,7 +74,7 @@ class TeamworkServiceProvider extends ServiceProvider
      */
     protected function registerTeamwork()
     {
-        $this->app->bind('teamwork', function($app) {
+        $this->app->bind('teamwork', function ($app) {
             return new Teamwork($app);
         });
     }
@@ -84,13 +84,14 @@ class TeamworkServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function registerFacade() {
-        $this->app->booting(function()
-        {
+    public function registerFacade()
+    {
+        $this->app->booting(function () {
             $loader = \Illuminate\Foundation\AliasLoader::getInstance();
             $loader->alias('Teamwork', 'Mpociot\Teamwork\Facades\Teamwork');
         });
     }
+
     /**
      * Merges user's and teamwork's configs.
      *
