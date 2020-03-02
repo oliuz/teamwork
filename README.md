@@ -35,7 +35,7 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 
 ## For Laravel 5.7|5.8
 
-    "oliuz/teamwork": "^5.3"
+    "oliuz/teamwork": "^6.0"
 
 Add the version you need to your composer.json. Then run `composer install` or `composer update`.
 
