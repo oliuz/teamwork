@@ -1,5 +1,8 @@
 # Changelog
 
+#### v7.0.0 `2020-03-09`
+- Added Laravel v7 Support.
+
 #### v6.0.0 `2019-04-02`
 - Added Laravel v6 Support.
 

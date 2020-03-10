@@ -3,12 +3,12 @@
 namespace Mpociot\Teamwork\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\DetectsApplicationNamespace;
+use Mpociot\Teamwork\Traits\DetectNamespace;
 
 class MakeTeamwork extends Command
 {
 
-    use DetectsApplicationNamespace;
+    use DetectNamespace;
 
     /**
      * The name and signature of the console command.
@@ -23,7 +23,7 @@ class MakeTeamwork extends Command
      * @var string
      */
     protected $description = 'Create Teamwork scaffolding files.';
-    
+
     protected $views = [
         'emails/invite.blade.php' => 'teamwork/emails/invite.blade.php',
         'members/list.blade.php' => 'teamwork/members/list.blade.php',
@@ -52,7 +52,7 @@ class MakeTeamwork extends Command
         $this->createDirectories();
 
         $this->exportViews();
-        
+
         if (! $this->option('views')) {
             $this->info('Installed TeamController.');
             file_put_contents(
