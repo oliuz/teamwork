@@ -1,4 +1,11 @@
-<?php namespace Mpociot\Teamwork\Traits;
+<?php
+
+namespace Mpociot\Teamwork\Traits;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * This file is part of Teamwork
@@ -6,10 +13,6 @@
  * @license MIT
  * @package Teamwork
  */
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
-
 trait TeamworkTeamTrait
 {
 
@@ -19,29 +22,29 @@ trait TeamworkTeamTrait
      */
     public function invites()
     {
-        return $this->hasMany( Config::get('teamwork.invite_model'), 'team_id', 'id');
+        return $this->hasMany(Config::get('teamwork.invite_model'), 'team_id', 'id');
     }
-    
+
     /**
      * Many-to-Many relations with the user model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('teamwork.user_model'), Config::get('teamwork.team_user_table'), 'team_id','user_id')->withTimestamps();
+        return $this->belongsToMany(Config::get('teamwork.user_model'), Config::get('teamwork.team_user_table'), 'team_id', 'user_id')->withTimestamps();
     }
 
     /**
      * Has-One relation with the user model.
      * This indicates the owner of the team
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function owner()
     {
-        $userModel   = Config::get( 'teamwork.user_model' );
-        $userKeyName = ( new $userModel() )->getKeyName();
+        $userModel = Config::get('teamwork.user_model');
+        $userKeyName = (new $userModel())->getKeyName();
         return $this->belongsTo(Config::get('teamwork.user_model'), "owner_id", $userKeyName);
     }
 
@@ -52,9 +55,9 @@ trait TeamworkTeamTrait
      * @param Model $user
      * @return bool
      */
-    public function hasUser( Model $user )
+    public function hasUser(Model $user)
     {
-        return $this->users()->where( $user->getKeyName(), "=", $user->getKey() )->first() ? true : false;
+        return $this->users()->where($user->getKeyName(), "=", $user->getKey())->first() ? true : false;
     }
 
 }

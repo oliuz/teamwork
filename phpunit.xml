@@ -3,21 +3,20 @@
          backupStaticAttributes="false"
          bootstrap="vendor/autoload.php"
          colors="true"
+         verbose="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false"
-         syntaxCheck="false"
-        >
+         stopOnFailure="false">
     <testsuites>
-        <testsuite name="Package Test Suite">
+        <testsuite name="Teamwork Test Suite">
             <directory>tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">src/Mpociot/</directory>
+            <directory suffix=".php">src/</directory>
         </whitelist>
     </filter>
 </phpunit>

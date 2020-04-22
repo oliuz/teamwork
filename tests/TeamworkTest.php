@@ -1,93 +1,61 @@
 <?php
 
-use Illuminate\Support\Facades\Config;
-use Mpociot\Teamwork\TeamInvite;
-use Mpociot\Teamwork\Teamwork;
+namespace Mpociot\Teamwork\Tests;
+
+use Exception;
 use Mockery as m;
+use Mpociot\Teamwork\TeamInvite;
 use Mpociot\Teamwork\TeamworkTeam;
+use Illuminate\Support\Facades\Config;
 
-class TeamworkTest extends Orchestra\Testbench\TestCase
+/**
+ * Class TeamworkTest
+ * @package Mpociot\Teamwork\Tests
+ */
+class TeamworkTest extends TestCase
 {
-    protected $user;
-
     /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return void
+     * @param null $team
+     * @return mixed
      */
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('teamwork.user_model', 'User');
-
-        \Schema::create('users', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-    }
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => realpath(__DIR__.'/../src/database/migrations'),
-        ]);
-
-        $this->user = new User();
-        $this->user->name = 'Marcel';
-        $this->user->save();
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [\Mpociot\Teamwork\TeamworkServiceProvider::class];
-    }
-
-    protected function getPackageAliases($app)
-    {
-        return [
-            'Teamwork' => \Mpociot\Teamwork\Facades\Teamwork::class
-        ];
-    }
-
     protected function createInvite($team = null)
     {
-        if(is_null($team)) {
-            $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $user = $this->createDummyAuthUser();
+
+        if (is_null($team)) {
+            $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         }
 
-        $invite               = $this->app->make(Config::get('teamwork.invite_model'));
-        $invite->user_id      = $this->user->getKey();
-        $invite->team_id      = $team->getKey();
-        $invite->type         = 'invite';
-        $invite->email        = 'foo@bar.com';
-        $invite->accept_token = md5( uniqid( microtime() ) );
-        $invite->deny_token   = md5( uniqid( microtime() ) );
+        $invite = $this->app->make(Config::get('teamwork.invite_model'));
+        $invite->user_id = $user->getKey();
+        $invite->team_id = $team->getKey();
+        $invite->type = 'invite';
+        $invite->email = 'foo@bar.com';
+        $invite->accept_token = md5(uniqid(microtime()));
+        $invite->deny_token = md5(uniqid(microtime()));
         $invite->save();
 
         return $invite;
     }
 
-    public function tearDown()
+    /**
+     *
+     */
+    public function tearDown(): void
     {
         m::close();
     }
 
-
-    public function testUser()
+    /** @test */
+    public function user()
     {
         $this->assertNull(\Teamwork::user());
         auth()->login($this->user);
         $this->assertEquals($this->user, \Teamwork::user());
     }
 
-    public function testGetInviteFromTokens()
+    /** @test */
+    public function get_invite_from_tokens()
     {
         $invite = $this->createInvite();
 
@@ -95,58 +63,64 @@ class TeamworkTest extends Orchestra\Testbench\TestCase
         $this->assertEquals($invite->toArray(), \Teamwork::getInviteFromDenyToken($invite->deny_token)->toArray());
     }
 
-
-    public function testDenyInvite()
+    /** @test */
+    public function a_deny_invite()
     {
         $invite = $this->createInvite();
-        \Teamwork::denyInvite( $invite );
+        \Teamwork::denyInvite($invite);
         $this->assertNull(TeamInvite::find($invite->getKey()));
     }
 
-
-    public function testHasPendingInviteFalse()
+    /** @test */
+    public function has_pending_invite_false()
     {
-        $this->assertFalse( \Teamwork::hasPendingInvite( 'foo@bar.com', 1 ) );
+        $this->assertFalse(\Teamwork::hasPendingInvite('foo@bar.com', 1));
     }
 
-
-    public function testHasPendingInviteTrue()
+    /** @test */
+    public function has_pending_invite_true()
     {
         $invite = $this->createInvite();
-        $this->assertTrue( \Teamwork::hasPendingInvite( $invite->email, $invite->team_id ) );
+        $this->assertTrue(\Teamwork::hasPendingInvite($invite->email, $invite->team_id));
     }
 
-    public function testHasPendingInviteFromObject()
+    /** @test */
+    public function has_pending_invite_from_object()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $invite = $this->createInvite($team);
-        $this->assertTrue( \Teamwork::hasPendingInvite( $invite->email, $team ) );
+        $this->assertTrue(\Teamwork::hasPendingInvite($invite->email, $team));
     }
 
-
-    public function testHasPendingInviteFromArray()
+    /** @test */
+    public function has_pending_invite_from_array()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $invite = $this->createInvite($team);
-        $this->assertTrue( \Teamwork::hasPendingInvite( $invite->email, $team->toArray() ) );
+        $this->assertTrue(\Teamwork::hasPendingInvite($invite->email, $team->toArray()));
     }
 
-    public function testCanNotInviteToUserWithoutEmail()
+    /** @test
+     * @throws Exception
+     */
+    public function can_not_invite_to_user_without_email()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team Q', 'slug' => 'test-team-q']);
         $this->user->attachTeam($team);
         auth()->login($this->user);
 
-        $this->setExpectedException('Exception','The provided object has no "email" attribute and is not a string.');
-        \Teamwork::inviteToTeam( $this->user );
+        throw new \Exception('The provided object has no "email" attribute and is not a string.');
+
+        \Teamwork::inviteToTeam($this->user);
     }
 
-    public function testCanAcceptInvite()
+    /** @test */
+    public function can_accept_invite()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team9', 'slug' => 'test-team9']);
         $invite = $this->createInvite($team);
         auth()->login($this->user);
-        \Teamwork::acceptInvite( $invite );
+        \Teamwork::acceptInvite($invite);
 
         $this->assertCount(1, $this->user->teams);
         $this->assertEquals($team->getKey(), $this->user->current_team_id);
@@ -154,122 +128,130 @@ class TeamworkTest extends Orchestra\Testbench\TestCase
         $this->assertNull(TeamInvite::find($invite->getKey()));
     }
 
-    public function testCanInviteToTeam()
+    /** @test */
+    public function can_invite_to_team()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
         $email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
+        $team = TeamworkTeam::create(['name' => 'Test', 'slug' => 'test']);
 
         $callback = m::mock('stdClass');
         $callback->shouldReceive('callback')->once()
-            ->with( m::type(TeamInvite::class) )->andReturn();
-        \Teamwork::inviteToTeam( $email, $team->getKey(), array($callback,'callback') );
+            ->with(m::type(TeamInvite::class))->andReturn();
+        \Teamwork::inviteToTeam($email, $team->getKey(), array($callback, 'callback'));
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
-            'user_id' => $this->user->getKey(),
+            'user_id' => $user->getKey(),
             'team_id' => $team->getKey()
         ]);
     }
 
-    public function testCanInviteToTeamWithObject()
+    /** @test */
+    public function can_invite_to_team_with_object()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
         $email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
+        $team = TeamworkTeam::create(['name' => 'Test', 'slug' => 'test']);
 
         $callback = m::mock('stdClass');
         $callback->shouldReceive('callback')->once()
-            ->with( m::type(TeamInvite::class) )->andReturn();
-        \Teamwork::inviteToTeam( $email, $team, array($callback,'callback') );
+            ->with(m::type(TeamInvite::class))->andReturn();
+        \Teamwork::inviteToTeam($email, $team, array($callback, 'callback'));
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
-            'user_id' => $this->user->getKey(),
+            'user_id' => $user->getKey(),
             'team_id' => $team->getKey()
         ]);
     }
 
-    public function testCanInviteToTeamWithArray()
+    /** @test */
+    public function can_invite_to_team_with_array()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
         $email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
+        $team = TeamworkTeam::create(['name' => 'Test', 'slug' => 'test']);
 
         $callback = m::mock('stdClass');
         $callback->shouldReceive('callback')->once()
-            ->with( m::type(TeamInvite::class) )->andReturn();
-        \Teamwork::inviteToTeam( $email, $team->toArray(), array($callback,'callback') );
+            ->with(m::type(TeamInvite::class))->andReturn();
+        \Teamwork::inviteToTeam($email, $team->toArray(), array($callback, 'callback'));
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
-            'user_id' => $this->user->getKey(),
+            'user_id' => $user->getKey(),
             'team_id' => $team->getKey()
         ]);
     }
 
-    public function testCanInviteToTeamWithUser()
+    /** @test */
+    public function can_invite_to_team_with_user()
     {
-        auth()->login($this->user);
-        $this->user->email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
+        $user = $this->createDummyAuthUser();
+        $user->email = "asd@fake.com";
+        $team = TeamworkTeam::create(['name' => 'Test', 'slug' => 'test']);
 
         $callback = m::mock('stdClass');
         $callback->shouldReceive('callback')->once()
-            ->with( m::type(TeamInvite::class) )->andReturn();
-        \Teamwork::inviteToTeam( $this->user, $team->toArray(), array($callback,'callback') );
+            ->with(m::type(TeamInvite::class))->andReturn();
+        \Teamwork::inviteToTeam($user, $team->toArray(), array($callback, 'callback'));
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
-            'user_id' => $this->user->getKey(),
+            'user_id' => $user->getKey(),
             'team_id' => $team->getKey()
         ]);
     }
 
-    public function testCanInviteToTeamWithNull()
+    /** @test */
+    public function can_invite_to_team_with_null()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
         $email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
-        $this->user->attachTeam($team);
+        $team = TeamworkTeam::create(['name' => 'test', 'slug' => 'test']);
+        $user->attachTeam($team);
 
         $callback = m::mock('stdClass');
         $callback->shouldReceive('callback')->once()
-            ->with( m::type(TeamInvite::class) )->andReturn();
-        \Teamwork::inviteToTeam( $email, null, array($callback,'callback') );
+            ->with(m::type(TeamInvite::class))->andReturn();
+        \Teamwork::inviteToTeam($email, null, array($callback, 'callback'));
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
             'team_id' => $team->getKey()
         ]);
     }
 
-    public function testCanInviteToTeamWithoutCallback()
+    /** @test */
+    public function can_invite_to_team_without_callback()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
         $email = "asd@fake.com";
-        $team = TeamworkTeam::create(['name' => 'test']);
-        $this->user->attachTeam($team);
+        $team = TeamworkTeam::create(['name' => 'test', 'slug' => 'test']);
+        $user->attachTeam($team);
 
-        \Teamwork::inviteToTeam( $email );
+        \Teamwork::inviteToTeam($email);
 
-        $this->assertDatabaseHas(config('teamwork.team_invites_table'),[
+        $this->assertDatabaseHas(config('teamwork.team_invites_table'), [
             'email' => 'asd@fake.com',
             'team_id' => $team->getKey()
         ]);
     }
-    
-    public function testInviteToTeamFiresEvent()
+
+    /** @test
+     * @throws Exception
+     */
+    public function invite_to_team_fires_event()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $invite = $this->createInvite($team);
         $this->expectsEvents(\Mpociot\Teamwork\Events\UserInvitedToTeam::class);
     }
-
 }
 

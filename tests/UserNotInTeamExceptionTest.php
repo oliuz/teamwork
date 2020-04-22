@@ -1,16 +1,26 @@
 <?php
 
+namespace Mpociot\Teamwork\Tests;
+
 use Mockery as m;
 
-class UserNotInTeamExceptionTest extends PHPUnit_Framework_TestCase
+/**
+ * Class UserNotInTeamExceptionTest
+ * @package Mpociot\Teamwork\Tests
+ */
+class UserNotInTeamExceptionTest extends TestCase
 {
 
-    public function tearDown()
+    /**
+     *
+     */
+    public function tearDown(): void
     {
         m::close();
     }
 
-    public function testGetTeam()
+    /** @test */
+    public function get_team_exception()
     {
         $exception = new \Mpociot\Teamwork\Exceptions\UserNotInTeamException();
         $exception->setTeam( "Test" );

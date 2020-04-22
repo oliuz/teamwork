@@ -1,62 +1,37 @@
 <?php
 
-use Event;
+namespace Mpociot\Teamwork\Tests;
+
+use Exception;
+use Mockery as m;
 use Mpociot\Teamwork\TeamworkTeam;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Schema;
+use Mpociot\Teamwork\Tests\Models\User;
+use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
+/**
+ * Class UserHasTeamsTraitTest
+ * @package Mpociot\Teamwork\Tests
+ */
+class UserHasTeamsTraitTest extends TestCase
 {
-    protected $user;
-
     /**
-     * Define environment setup.
      *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return void
      */
-    protected function getEnvironmentSetUp($app)
+    public function tearDown(): void
     {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('teamwork.user_model', 'User');
-
-        \Schema::create('users', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        m::close();
     }
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => realpath(__DIR__.'/../src/database/migrations'),
-        ]);
-
-        $this->user = new User();
-        $this->user->name = 'Marcel';
-        $this->user->save();
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [\Mpociot\Teamwork\TeamworkServiceProvider::class];
-    }
-
-    protected function getPackageAliases($app)
-    {
-        return [
-            'Teamwork' => \Mpociot\Teamwork\Facades\Teamwork::class
-        ];
-    }
-
-    public function testNewUserHasNoTeams()
+    /** @test */
+    public function new_user_has_no_teams()
     {
         $user = new User();
         $user->name = 'Marcel';
+        $user->password = bcrypt('password');
+        $user->email = "email@email.com";
         $user->save();
 
         $this->assertCount(0, $user->teams);
@@ -66,107 +41,119 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         $this->assertCount(0, $user->invites);
     }
 
-    public function testAttachingTeamSetsCurrentTeam()
+    /** @test */
+    public function attaching_team_sets_current_team()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
         $this->assertNull($this->user->currentTeam);
 
-        $this->user->attachTeam($team);
+        $this->user->attachTeam($this->team);
 
         $this->assertEquals(1, $this->user->currentTeam->getKey());
     }
 
-    public function testCanAttachTeamToUser()
+    /** @test */
+    public function can_attach_team_to_user()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team']);
 
         $this->user->attachTeam($team);
 
         // Reload relation
         $this->assertCount(1, $this->user->teams);
-        $this->assertEquals(TeamworkTeam::find(1)->toArray(), $this->user->currentTeam->toArray());
+        $this->assertEquals(TeamworkTeam::find(2)->toArray(), $this->user->currentTeam->toArray());
     }
 
-    public function testCanAttachTeamAsArrayToUser()
+    /** @test */
+    public function can_attach_team_as_array_to_user()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
+        $team = TeamworkTeam::create(['name' => 'Team2', 'slug' => 'team2']);
 
         $this->user->attachTeam($team->toArray());
 
         // Reload relation
         $this->assertCount(1, $this->user->teams);
-        $this->assertEquals(TeamworkTeam::find(1)->toArray(), $this->user->currentTeam->toArray());
+        $this->assertEquals(TeamworkTeam::find(2)->toArray(), $this->user->currentTeam->toArray());
     }
 
-    public function testCanAttachTeamAsIDToUser()
+    /** @test */
+    public function can_attach_team_as_id_to_user()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeam($team->getKey());
+        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team']);
+
+        $user->attachTeam($team->getKey());
 
         // Reload relation
-        $this->assertCount(1, $this->user->teams);
-        $this->assertEquals(TeamworkTeam::find(1)->toArray(), $this->user->currentTeam->toArray());
+        $this->assertCount(1, $user->teams);
+        $this->assertEquals(TeamworkTeam::find(2)->toArray(), $user->currentTeam->toArray());
     }
 
-    public function testCanSetPivotDataOnAttachTeamMethod()
+    /** @test */
+    public function can_set_pivot_data_on_attach_team_method()
     {
-        \Schema::table(config( 'teamwork.team_user_table' ), function ($table) {
+        $user = $this->createDummyAuthUser();
+
+        Schema::table(config('teamwork.team_user_table'), function ($table) {
             $table->boolean('pivot_set')->default(false);
         });
 
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team']);
         $pivotData = ['pivot_set' => true];
 
-        $this->user->attachTeam($team, $pivotData);
+        $user->attachTeam($team, $pivotData);
 
         $this->assertDatabaseHas(config('teamwork.team_user_table'), [
-            'user_id' => $this->user->getKey(),
+            'user_id' => $user->getKey(),
             'team_id' => $team->getKey(),
             'pivot_set' => true
         ]);
     }
 
-    public function testIsTeamOwner()
+    /** @test */
+    public function is_team_owner()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
-        $this->user->attachTeam($team->getKey());
+        $this->user->attachTeam($this->team->getKey());
 
         $this->assertFalse($this->user->isTeamOwner());
         $this->assertFalse($this->user->isOwner());
 
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team', 'owner_id' => $this->user->getKey()]);
-        $this->user->attachTeam($team2->getKey());
+        $user = $this->createDummyAuthUser();
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2', 'owner_id' => $user->getKey()]);
+        $user->attachTeam($team2->getKey());
 
-        $this->assertTrue($this->user->isTeamOwner());
-        $this->assertTrue($this->user->isOwner());
+        $this->assertTrue($user->isTeamOwner());
+        $this->assertTrue($user->isOwner());
     }
 
-    public function testIsOwnerOfTeam()
+    /** @test */
+    public function is_owner_of_team()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team']);
         $this->user->attachTeam($team->getKey());
 
         $this->assertFalse($this->user->isOwnerOfTeam($team));
 
-        $team = TeamworkTeam::create(['name' => 'Test-Team', 'owner_id' => $this->user->getKey()]);
+        $team = TeamworkTeam::create(['name' => 'Test-Team 4', 'slug' => 'test-team-4', 'owner_id' => $this->user->getKey()]);
         $this->user->attachTeam($team->getKey());
 
         $this->assertTrue($this->user->isOwnerOfTeam($team));
     }
 
-    public function testGetOwnedTeams()
+    /** @test */
+    public function get_owned_teams()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team', 'owner_id' => $this->user->getKey()]);
+        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team', 'owner_id' => $this->user->getKey()]);
         $this->user->attachTeam($team->getKey());
         $this->assertCount(1, $this->user->ownedTeams);
     }
 
-    public function testCanDetachTeam()
+    /** @test */
+    public function can_detach_team()
     {
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
         $this->user->attachTeam($team1);
         $this->user->attachTeam($team2);
@@ -178,9 +165,10 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         $this->assertCount(2, $this->user->teams()->get());
     }
 
-    public function testDetachTeamResetsCurrentTeam()
+    /** @test */
+    public function detach_team_resets_current_team()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
 
         $this->user->attachTeam($team);
 
@@ -190,11 +178,12 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         $this->assertNull($this->user->currentTeam);
     }
 
-    public function testAttachTeamFiresEvent()
+    /** @test */
+    public function attach_team_fires_event()
     {
         Event::fake();
 
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $this->user->attachTeam($team1);
 
         Event::assertDispatched(\Mpociot\Teamwork\Events\UserJoinedTeam::class, function ($e) use ($team1) {
@@ -203,11 +192,12 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         Event::assertNotDispatched(\Mpociot\Teamwork\Events\UserLeftTeam::class);
     }
 
-    public function testDetachTeamFiresEvent()
+    /** @test */
+    public function detach_team_fires_event()
     {
         Event::fake();
 
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team']);
         $this->user->attachTeam($team1);
         $this->user->detachTeam($team1);
 
@@ -216,108 +206,120 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         });
     }
 
-    public function testCanAttachMultipleTeams()
+    /** @test */
+    public function can_attach_multiple_teams()
     {
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeams([
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
+
+        $user->attachTeams([
             $team1,
             $team2,
             $team3
         ]);
 
-        $this->assertCount(3, $this->user->teams()->get());
+        $this->assertCount(3, $user->teams()->get());
     }
 
-    public function testCanDetachMultipleTeams()
+    /** @test */
+    public function can_detach_multiple_teams()
     {
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeams([
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
+
+        $user->attachTeams([
             $team1,
             $team2,
             $team3
         ]);
 
-        $this->assertCount(3, $this->user->teams()->get());
+        $this->assertCount(3, $user->teams()->get());
 
-        $this->user->detachTeams([
+        $user->detachTeams([
             $team1,
             $team3
         ]);
 
-        $this->assertCount(1, $this->user->teams()->get());
+        $this->assertCount(1, $user->teams()->get());
     }
 
-    public function testCurrentTeamGetsResetWhenDetached()
+    /** @test */
+    public function the_current_team_gets_reset_when_detached()
     {
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
+        $user = $this->createDummyAuthUser();
+
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
+
+        $user->attachTeams([
+            $team1,
+            $team2,
+            $team3
+        ]);
+
+        $this->assertEquals($team1->getKey(), $user->currentTeam->getKey());
+
+        $user->detachTeam($team1);
+
+        $this->assertNull($user->currentTeam);
+    }
+
+    /** @test */
+    public function a_user_can_switch_team()
+    {
+        $user = $this->createDummyAuthUser();
+
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
         $this->user->attachTeams([
             $team1,
             $team2,
             $team3
         ]);
-
         $this->assertEquals($team1->getKey(), $this->user->currentTeam->getKey());
-
-        $this->user->detachTeam($team1);
-
-        $this->assertNull($this->user->currentTeam);
-    }
-
-    public function testUserCanSwitchTeam()
-    {
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
-
-        $this->user->attachTeams([
-            $team1,
-            $team2,
-            $team3
-        ]);
-        $this->assertEquals($team1->getKey(), $this->user->currentTeam->getKey());
-        $this->user->switchTeam($team2);
+        $user->switchTeam($team2);
         $this->assertEquals($team2->getKey(), $this->user->currentTeam->getKey());
     }
 
-    public function testUserCannotSwitchToInvalidTeam()
+    /** @test */
+    public function user_cannot_switch_to_invalid_team()
     {
-
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
-        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3']);
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
+        $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
         $this->user->attachTeams([
             $team1,
             $team2
         ]);
 
-        $this->setExpectedException('Mpociot\Teamwork\Exceptions\UserNotInTeamException',
-            'The user is not in the team Test-Team 3');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The user is not in the team Test-Team 3');
         $this->user->switchTeam($team3);
     }
 
-    public function testUserCannotSwitchToNotExistingTeam()
+    /** @test */
+    public function a_user_cannot_switch_to_not_existing_team()
     {
-
-        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1']);
-        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2']);
+        $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
+        $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
 
         $this->user->attachTeams([
             $team1,
             $team2
         ]);
 
-        $this->setExpectedException('Illuminate\Database\Eloquent\ModelNotFoundException');
+//        $this->setExpectedException();
+        $this->expectException(Exception::class);
         $this->user->switchTeam(3);
     }
-
 }

@@ -1,18 +1,27 @@
 <?php
 
+namespace Mpociot\Teamwork\Tests;
 use Illuminate\Support\Facades\Config;
 use Mockery as m;
 use Mpociot\Teamwork\Traits\TeamworkTeamTrait;
+use Orchestra\Testbench\TestCase as Orchestra;
 
-class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
+/**
+ * Class TeamworkTeamTraitTest
+ */
+class TeamworkTeamTraitTest extends TestCase
 {
 
-    public function tearDown()
+    /**
+     *
+     */
+    public function tearDown() :void
     {
         m::close();
     }
 
-    public function testGetInvites()
+    /** @test */
+    public function get_invites_the_team()
     {
         Config::shouldReceive('get')
             ->once()
@@ -27,7 +36,8 @@ class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( [], $stub->invites() );
     }
 
-    public function testGetUsers()
+    /** @test */
+    public function get_users_for_the_team()
     {
         Config::shouldReceive('get')
             ->once()
@@ -53,7 +63,8 @@ class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( [], $stub->users() );
     }
 
-    public function testGetOwner()
+    /** @test */
+    public function get_owner_a_the_team()
     {
         Config::shouldReceive('get')
             ->once()
@@ -69,7 +80,8 @@ class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( [], $stub->owner() );
     }
 
-    public function testHasUser()
+    /** @test */
+    public function has_user()
     {
         $stub = m::mock( 'TestUserTeamTraitStub[users,first]' );
 
@@ -93,12 +105,13 @@ class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
         $this->assertTrue( $stub->hasUser( $user ) );
     }
 
-    public function testHasUserReturnsFalse()
+    /** @test */
+    public function has_user_returns_false()
     {
         $stub = m::mock( 'TestUserTeamTraitStub[users,first]' );
 
-        $user = m::mock( 'TestUser[getKey]' );
-        $user->shouldReceive('getKey')
+        $user = m::mock( 'TestUser[getKeyName]' );
+        $user->shouldReceive('getKeyName')
             ->once()
             ->andReturn('key');
 
@@ -119,13 +132,25 @@ class TeamworkTeamTraitTest extends PHPUnit_Framework_TestCase
 
 }
 
-class TestUser extends Illuminate\Database\Eloquent\Model {
+/**
+ * Class TestUser
+ * @package Mpociot\Teamwork\Tests
+ */
+class TestUser extends \Illuminate\Database\Eloquent\Model {
+    /**
+     * @return string
+     */
     public function getKeyName()
     {
         return "user_id";
     }
 }
-class TestUserTeamTraitStub extends Illuminate\Database\Eloquent\Model {
+
+/**
+ * Class TestUserTeamTraitStub
+ * @package Mpociot\Teamwork\Tests
+ */
+class TestUserTeamTraitStub extends \Illuminate\Database\Eloquent\Model {
 
     use TeamworkTeamTrait;
 }

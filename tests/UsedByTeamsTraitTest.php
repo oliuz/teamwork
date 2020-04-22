@@ -1,131 +1,79 @@
 <?php
 
+namespace Mpociot\Teamwork\Tests;
+
+use Mockery as m;
 use Mpociot\Teamwork\TeamworkTeam;
+use Mpociot\Teamwork\Tests\Models\Task;
+use Mpociot\Teamwork\Tests\Models\User;
 
-class UsedByTeamsTraitTest extends Orchestra\Testbench\TestCase
+/**
+ * Class UsedByTeamsTraitTest
+ * @package Mpociot\Teamwork\Tests
+ */
+class UsedByTeamsTraitTest extends TestCase
 {
-    protected $user;
-    protected $team;
-
-    /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return void
-     */
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('teamwork.user_model', 'User');
-
-        \Schema::create('users', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        \Schema::create('tasks', function ($table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->integer('team_id');
-            $table->timestamps();
-        });
-    }
-
     /**
      *
      */
-    public function setUp()
+    public function tearDown(): void
     {
-        parent::setUp();
-
-        $this->artisan('migrate', [
-            '--database' => 'testing',
-            '--realpath' => realpath(__DIR__.'/../src/database/migrations'),
-        ]);
-
-        $this->user = new User();
-        $this->user->name = 'Marcel';
-        $this->user->save();
-
-        $this->team = TeamworkTeam::create(['name' => 'Test-Team']);
-        $this->user->attachTeam($this->team);
+        m::close();
     }
 
-    protected function getPackageProviders($app)
+    /** @test */
+    public function a_throws_exception_when_unauthorized()
     {
-        return [\Mpociot\Teamwork\TeamworkServiceProvider::class];
-    }
-
-    protected function getPackageAliases($app)
-    {
-        return [
-            'Teamwork' => \Mpociot\Teamwork\Facades\Teamwork::class
-        ];
-    }
-
-    public function testThrowsExceptionWhenUnauthorized()
-    {
-        $this->setExpectedException(\Exception::class,'No authenticated user with selected team present.');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('No authenticated user with selected team present.');
 
         $task = new Task();
         $task->name = 'Buy milk';
         $task->save();
     }
 
-    public function testGetsCurrentTeamTasks()
+    /** @test */
+    public function gets_a_current_team_tasks()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
-        $task = new Task();
-        $task->team_id = $this->user->currentTeam->getKey();
-        $task->name = 'Buy milk';
-        $task->save();
+        $team = TeamworkTeam::create(['name' => 'Team2', 'slug' => 'team2', 'owner_id' => $user->getKey()]);
 
-        $task2 = new Task();
-        $task2->team_id = $this->user->currentTeam->getKey() + 1;
-        $task2->name = 'Buy steaks';
-        $task2->save();
+        $tasks = Task::create(['name' => 'Task1', 'team_id' => $team->getKey()]);
 
-        $tasks = Task::all();
-        $this->assertCount(1, $tasks);
-        $this->assertEquals($task->id, $tasks->first()->id);
-        $this->assertEquals($task->team_id, $tasks->first()->team_id);
-        $this->assertEquals($task->name, $tasks->first()->name);
+        $this->assertCount(1, $this->task->all());
+        $this->assertEquals($tasks->id, $tasks->first()->id);
+        $this->assertEquals($tasks->team_id, $tasks->first()->team_id);
+        $this->assertEquals($tasks->name, $tasks->first()->name);
     }
 
-    public function testGetsAllTasks()
+    /** @test */
+    public function gets_a_all_tasks()
     {
+        $user = $this->createDummyAuthUser();
 
-        auth()->login($this->user);
+        $team1 = TeamworkTeam::create(['name' => 'Team1', 'slug' => 'team1', 'owner_id' => $user->getKey()]);
+        $team2 = TeamworkTeam::create(['name' => 'Team2', 'slug' => 'team2', 'owner_id' => $user->getKey()]);
 
-        $task = new Task();
-        $task->team_id = $this->user->currentTeam->getKey();
-        $task->name = 'Buy milk';
-        $task->save();
-
-        $task2 = new Task();
-        $task2->team_id = $this->user->currentTeam->getKey() + 1;
-        $task2->name = 'Buy steaks';
-        $task2->save();
+        Task::create(['name' => 'Task1', 'team_id' => $team1->getKey()]);
+        Task::create(['name' => 'Task1', 'team_id' => $team2->getKey()]);
 
         $tasks = Task::allTeams()->get();
-        $this->assertCount(2, $tasks);
+        $this->assertCount(3, $tasks);
     }
 
-    public function testScopeAutomaticallyAddsCurrentTeam()
+    /** @test */
+    public function a_scope_automatically_adds_current_team()
     {
-        auth()->login($this->user);
+        $user = $this->createDummyAuthUser();
 
-        $task = new Task();
-        $task->name = 'Buy milk';
-        $task->save();
+        $team = TeamworkTeam::create(['name' => 'Team1', 'slug' => 'team1', 'owner_id' => $user->getKey()]);
+
+        Task::create(['name' => 'Task 1', 'team_id' => $team->getKey()]);
 
         $this->assertDatabaseHas('tasks', [
-            'name' => 'Buy milk',
-            'team_id' => $this->user->currentTeam->getKey()
+            'name' => 'Task 1',
+            'team_id' => $team->getKey()
         ]);
     }
 }

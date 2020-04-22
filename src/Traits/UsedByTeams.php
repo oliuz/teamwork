@@ -26,13 +26,15 @@ trait UsedByTeams
         static::addGlobalScope('team', function (Builder $builder) {
             static::teamGuard();
 
-            $builder->where($builder->getQuery()->from . '.team_id', auth()->user()->currentTeam->getKey());
+            if (auth()->check()) {
+                $builder->where($builder->getQuery()->from . '.team_id', auth()->user()->currentTeam->getKey());
+            }
         });
 
         static::saving(function (Model $model) {
             static::teamGuard();
 
-            if (!isset($model->team_id)) {
+            if (!isset($model->team_id) && auth()->check()) {
                 $model->team_id = auth()->user()->currentTeam->getKey();
             }
         });
@@ -60,8 +62,12 @@ trait UsedByTeams
      */
     protected static function teamGuard()
     {
-        if (auth()->guest() || !auth()->user()->currentTeam) {
-            throw new Exception('No authenticated user with selected team present.');
+        if (!in_array(config('app.env'), ['local', 'acceptance', 'testing'])) {
+            if (!app()->runningInConsole()) {
+                if (auth()->guest() || !auth()->user()->currentTeam) {
+                    throw new Exception('No authenticated user with selected team present.');
+                }
+            }
         }
     }
 }

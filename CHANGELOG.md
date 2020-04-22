@@ -1,6 +1,11 @@
 # Changelog
+#### v7.1.0 `2020-03-22`
+- Fixed psr-4 auto loading standard.
 
-#### v7.0.0 `2020-03-09`
+#### v7.0.1 `2020-03-09`
+- Added Laravel 7 Support & bug fixed.
+
+#### v7.0.0 `2020-03-02`
 - Added Laravel v7 Support.
 
 #### v6.0.0 `2019-04-02`

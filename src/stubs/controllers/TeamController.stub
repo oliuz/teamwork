@@ -2,10 +2,10 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use Illuminate\Routing\Controller;
 use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
+use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
 
 class TeamController extends Controller
 {
@@ -38,7 +38,7 @@ class TeamController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  {{namespace}}Http\Requests\Teamwork\TeamCreateRequest $request
+     * @param  TeamStoreRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(TeamStoreRequest $request)
@@ -96,7 +96,7 @@ class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  {{namespace}}Http\Requests\Teamwork\TeamStoreRequest $request
+     * @param  TeamStoreRequest $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
