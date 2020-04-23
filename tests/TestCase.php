@@ -2,6 +2,7 @@
 
 namespace Mpociot\Teamwork\Tests;
 
+use Dotenv\Dotenv;
 use Mpociot\Teamwork\TeamInvite;
 use Mpociot\Teamwork\TeamworkTeam;
 use Illuminate\Support\Facades\Schema;
@@ -40,9 +41,21 @@ abstract class TestCase extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->loadEnvironmentVariables();
         $this->loadLaravelMigrations();
         $this->loadMigrationsFrom(__DIR__ . '/../tests/migrations');
         $this->setUpDatabase($this->app);
+    }
+
+    protected function loadEnvironmentVariables()
+    {
+        if (! file_exists(__DIR__.'/../.env')) {
+            return;
+        }
+
+        $dotEnv = Dotenv::createImmutable(__DIR__.'/..');
+
+        $dotEnv->load();
     }
 
     /**
@@ -68,7 +81,7 @@ abstract class TestCase extends BaseTestCase
             'driver'   => 'sqlite',
             'database' => ':memory:'
         ]);
-        $app['config']->set('teamwork.user_model', 'User');
+        $app['config']->set('teamwork.user_model', User::class);
 
         Schema::create('users', function ($table) {
             $table->increments('id');
@@ -76,6 +89,13 @@ abstract class TestCase extends BaseTestCase
             $table->string('email');
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('tasks', function ($table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->integer('team_id');
+            $table->timestamps();
         });
     }
 
@@ -106,19 +126,20 @@ abstract class TestCase extends BaseTestCase
         $this->user->name = 'Julia';
         $this->user->email = 'foo@baz.com';
         $this->user->password = bcrypt('password');
-        $this->current_team_id = $this->team->getKey();
         $this->user->save();
+
+        $this->team = TeamworkTeam::create([
+            'name' => 'Test-Teams',
+            'slug' => 'test-teams'
+        ]);
+
+        $this->user->attachTeam($this->team);
 
         $this->inviter = new User();
         $this->inviter->name = 'Marcel';
         $this->inviter->email = 'foo@bar.com';
         $this->inviter->password = bcrypt('password');
         $this->inviter->save();
-
-        $this->team = TeamworkTeam::create([
-            'name' => 'Test-Teams',
-            'slug' => 'test-teams'
-        ]);
 
         $this->invite = new TeamInvite();
         $this->invite->team_id = $this->team->getKey();
@@ -139,8 +160,8 @@ abstract class TestCase extends BaseTestCase
     public function createDummyAuthUser(): User
     {
         $user = new User;
-        $user->name = "User";
-        $user->email = "user@email.com";
+        $user->name = "Josher";
+        $user->email = "josher@lol.com";
         $user->password = bcrypt("password");
         $user->save();
 

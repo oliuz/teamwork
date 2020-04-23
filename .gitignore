@@ -22,3 +22,9 @@ Homestead.json
 .DS_Store
 src/.DS_Store
 src/database/.DS_Store
+composer.lock
+/conf
+/.settings
+.env.*.php
+.env.php
+.phpunit.result.cache

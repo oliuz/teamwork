@@ -125,7 +125,7 @@ class TeamworkTest extends TestCase
         $this->assertCount(1, $this->user->teams);
         $this->assertEquals($team->getKey(), $this->user->current_team_id);
 
-        $this->assertNull(TeamInvite::find($invite->getKey()));
+        $this->assertNull(\TeamInvite::find($invite->getKey()));
     }
 
     /** @test */

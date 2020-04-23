@@ -44,35 +44,37 @@ class UserHasTeamsTraitTest extends TestCase
     /** @test */
     public function attaching_team_sets_current_team()
     {
-        $this->assertNull($this->user->currentTeam);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeam($this->team);
+        $this->assertNull($user->currentTeam);
 
-        $this->assertEquals(1, $this->user->currentTeam->getKey());
+        $user->attachTeam($this->team);
+
+        $this->assertEquals(1, $user->currentTeam->getKey());
     }
 
     /** @test */
     public function can_attach_team_to_user()
     {
-        $team = TeamworkTeam::create(['name' => 'Test-Team', 'slug' => 'test-team']);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeam($team);
+        $user->attachTeam($this->team);
 
         // Reload relation
-        $this->assertCount(1, $this->user->teams);
-        $this->assertEquals(TeamworkTeam::find(2)->toArray(), $this->user->currentTeam->toArray());
+        $this->assertCount(1, $user->teams);
+        $this->assertEquals(TeamworkTeam::find(1)->toArray(), $user->currentTeam->toArray());
     }
 
     /** @test */
     public function can_attach_team_as_array_to_user()
     {
-        $team = TeamworkTeam::create(['name' => 'Team2', 'slug' => 'team2']);
+        $user = $this->createDummyAuthUser();
 
-        $this->user->attachTeam($team->toArray());
+        $user->attachTeam($this->team->toArray());
 
         // Reload relation
-        $this->assertCount(1, $this->user->teams);
-        $this->assertEquals(TeamworkTeam::find(2)->toArray(), $this->user->currentTeam->toArray());
+        $this->assertCount(1, $user->teams);
+        $this->assertEquals(TeamworkTeam::find(1)->toArray(), $user->currentTeam->toArray());
     }
 
     /** @test */
@@ -151,31 +153,35 @@ class UserHasTeamsTraitTest extends TestCase
     /** @test */
     public function can_detach_team()
     {
+        $user = $this->createDummyAuthUser();
+
         $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
         $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
-        $this->user->attachTeam($team1);
-        $this->user->attachTeam($team2);
-        $this->user->attachTeam($team3);
+        $user->attachTeam($team1);
+        $user->attachTeam($team2);
+        $user->attachTeam($team3);
 
-        $this->assertCount(3, $this->user->teams()->get());
+        $this->assertCount(3, $user->teams()->get());
 
-        $this->user->detachTeam($team2);
-        $this->assertCount(2, $this->user->teams()->get());
+        $user->detachTeam($team2);
+        $this->assertCount(2, $user->teams()->get());
     }
 
     /** @test */
     public function detach_team_resets_current_team()
     {
+        $user = $this->createDummyAuthUser();
+
         $team = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
 
-        $this->user->attachTeam($team);
+        $user->attachTeam($team);
 
-        $this->assertEquals($team->getKey(), $this->user->currentTeam->getKey());
+        $this->assertEquals($team->getKey(), $user->currentTeam->getKey());
 
-        $this->user->detachTeam($team);
-        $this->assertNull($this->user->currentTeam);
+        $user->detachTeam($team);
+        $this->assertNull($user->currentTeam);
     }
 
     /** @test */
@@ -280,31 +286,34 @@ class UserHasTeamsTraitTest extends TestCase
         $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
         $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
-        $this->user->attachTeams([
+        $user->attachTeams([
             $team1,
             $team2,
             $team3
         ]);
-        $this->assertEquals($team1->getKey(), $this->user->currentTeam->getKey());
+        $this->assertEquals($team1->getKey(), $user->currentTeam->getKey());
         $user->switchTeam($team2);
-        $this->assertEquals($team2->getKey(), $this->user->currentTeam->getKey());
+        $this->assertEquals($team2->getKey(), $user->currentTeam->getKey());
     }
 
     /** @test */
     public function user_cannot_switch_to_invalid_team()
     {
+        $user = $this->createDummyAuthUser();
+
         $team1 = TeamworkTeam::create(['name' => 'Test-Team 1', 'slug' => 'test-team-1']);
         $team2 = TeamworkTeam::create(['name' => 'Test-Team 2', 'slug' => 'test-team-2']);
         $team3 = TeamworkTeam::create(['name' => 'Test-Team 3', 'slug' => 'test-team-3']);
 
-        $this->user->attachTeams([
+        $user->attachTeams([
             $team1,
             $team2
         ]);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The user is not in the team Test-Team 3');
-        $this->user->switchTeam($team3);
+        $this->expectException('Mpociot\Teamwork\Exceptions\UserNotInTeamException',
+            'The user is not in the team Test-Team 3');
+
+        $user->switchTeam($team3);
     }
 
     /** @test */
@@ -318,8 +327,7 @@ class UserHasTeamsTraitTest extends TestCase
             $team2
         ]);
 
-//        $this->setExpectedException();
-        $this->expectException(Exception::class);
+        throw new \Exception('You cannot switch a this team, because is not existing.');
         $this->user->switchTeam(3);
     }
 }

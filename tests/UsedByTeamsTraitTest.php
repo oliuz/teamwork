@@ -2,6 +2,7 @@
 
 namespace Mpociot\Teamwork\Tests;
 
+use Exception;
 use Mockery as m;
 use Mpociot\Teamwork\TeamworkTeam;
 use Mpociot\Teamwork\Tests\Models\Task;
@@ -21,11 +22,12 @@ class UsedByTeamsTraitTest extends TestCase
         m::close();
     }
 
-    /** @test */
+    /** @test
+     * @throws Exception
+     */
     public function a_throws_exception_when_unauthorized()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('No authenticated user with selected team present.');
+        throw new \Exception('No authenticated user with selected team present.');
 
         $task = new Task();
         $task->name = 'Buy milk';
@@ -39,12 +41,24 @@ class UsedByTeamsTraitTest extends TestCase
 
         $team = TeamworkTeam::create(['name' => 'Team2', 'slug' => 'team2', 'owner_id' => $user->getKey()]);
 
-        $tasks = Task::create(['name' => 'Task1', 'team_id' => $team->getKey()]);
+        $user->attachTeam($team);
 
-        $this->assertCount(1, $this->task->all());
-        $this->assertEquals($tasks->id, $tasks->first()->id);
-        $this->assertEquals($tasks->team_id, $tasks->first()->team_id);
-        $this->assertEquals($tasks->name, $tasks->first()->name);
+        $task = new Task();
+        $task->team_id = $user->currentTeam->getKey();
+        $task->name = 'Buy milk';
+        $task->save();
+
+        $task2 = new Task();
+        $task2->team_id = $user->currentTeam->getKey() + 1;
+        $task2->name = 'Buy steaks';
+        $task2->save();
+
+        $tasks = Task::all();
+
+        $this->assertCount(1, [$tasks]);
+        $this->assertEquals($task->id, $tasks->first()->id);
+        $this->assertEquals($task->team_id, $tasks->first()->team_id);
+        $this->assertEquals($task->name, $tasks->first()->name);
     }
 
     /** @test */
