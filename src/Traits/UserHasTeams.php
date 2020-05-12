@@ -80,9 +80,13 @@ trait UserHasTeams
      */
     public function isOwner()
     {
-	    $CurrentTeam=$this->currentTeam['id'];
-		return ( $this->teams()->where('id',$CurrentTeam)->where( "owner_id", "=", $this->getKey() )->first() ) ? true : false;
-	}
+        $CurrentTeam = $this->currentTeam['id'];
+
+        $teamModelName   = Config::get('teamwork.team_model');
+        $teamModel = new $teamModelName();
+
+        return ( $this->teams()->where($teamModel->getQualifiedKeyName(), $CurrentTeam)->where( $teamModel->qualifyColumn('owner_id'), "=", $this->getKey() )->first() ) ? true : false;
+    }
 
     /**
      * Wrapper method for "isOwner"

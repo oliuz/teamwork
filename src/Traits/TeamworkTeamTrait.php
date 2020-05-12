@@ -54,7 +54,7 @@ trait TeamworkTeamTrait
      */
     public function hasUser( Model $user )
     {
-        return $this->users()->where( $user->getKeyName(), "=", $user->getKey() )->first() ? true : false;
+        return $this->users()->where( $user->getQualifiedKeyName(), "=", $user->getKey() )->first() ? true : false;
     }
 
 }
