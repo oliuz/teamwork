@@ -1,0 +1,35 @@
+<?php
+
+namespace {{namespace}}Mail\Teamwork;
+
+use Illuminate\Mail\Mailable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class TeamInviteMember extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    public $invite;
+
+    /**
+     * Create a new message instance.
+     *
+     * @param $invite
+     */
+    public function __construct($invite)
+    {
+        $this->invite = $invite;
+    }
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {
+        return $this->markdown('teamwork.emails.invite-member')->subject('Invitation to join team ' . $this->invite->team->name);
+    }
+}

@@ -2,35 +2,33 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use Mpociot\Teamwork\TeamInvite;
 use Mpociot\Teamwork\TeamworkTeam;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use Mpociot\Teamwork\Facades\Teamwork;
+use {{namespace}}Mail\Teamwork\TeamInviteMember;
+use {{namespace}}Http\Requests\Teamwork\TeamInviteRequest;
 
 class TeamInviteController extends Controller
 {
     /**
      * @param TeamInviteRequest $request
      * @param TeamworkTeam $team
-     * @return RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function __invoke(TeamInviteRequest $request, TeamworkTeam $team)
     {
-        if ($request->email !== $team->owner->email){
-            if( !Teamwork::hasPendingInvite( $request->email, $team) )
-            {
-                Teamwork::inviteToTeam( $request->email, $team, function( $invite )
-                {
-                    Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
-                        $m->to($invite->email)->subject('Invitation to join team '.$invite->team->name);
-                    });
-                    // Send email to user
+        if ($request->email !== $team->owner->email) {
+            if (!Teamwork::hasPendingInvite($request->email, $team)) {
+                Teamwork::inviteToTeam($request->email, $team, function ($invite) {
+                    Mail::to($invite->email)->queue(new TeamInviteMember($invite));
                 });
             } else {
                 return redirect()->back()->withErrors([
                     'email' => 'The email address is already invited to the team.'
                 ]);
             }
-        }else {
+        } else {
             return redirect()->back()->withErrors([
                 'email' => 'The email address belongs to the team owner. Please, use another one!'
             ]);
