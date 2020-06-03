@@ -1,14 +1,20 @@
-<?php namespace Mpociot\Teamwork;
+<?php
+
+namespace Mpociot\Teamwork;
+
+use Illuminate\Support\ServiceProvider;
 
 /**
  * This file is part of Teamwork
  *
- * @license MIT
- * @package Teamwork
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
  */
-
-use Illuminate\Support\ServiceProvider;
-
 class TeamworkServiceProvider extends ServiceProvider
 {
     /**

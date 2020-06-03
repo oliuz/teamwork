@@ -1,11 +1,6 @@
-<?php namespace Mpociot\Teamwork\Traits;
+<?php
 
-/**
- * This file is part of Teamwork
- *
- * @license MIT
- * @package Teamwork
- */
+namespace Mpociot\Teamwork\Traits;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,8 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 
 /**
- * Class UsedByTeams
- * @package Mpociot\Teamwork\Traits
+ * This file is part of Teamwork
+ *
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
  */
 trait UsedByTeams
 {
@@ -48,9 +50,9 @@ trait UsedByTeams
     }
 
     /**
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function team()
+    public function team(): BelongsTo
     {
         return $this->belongsTo(Config::get('teamwork.team_model'));
     }

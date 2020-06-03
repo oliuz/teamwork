@@ -1,44 +1,49 @@
-<?php namespace Mpociot\Teamwork\Traits;
+<?php
+
+namespace Mpociot\Teamwork\Traits;
+
+use Illuminate\Support\Facades\Config;
 
 /**
  * This file is part of Teamwork
  *
- * @license MIT
- * @package Teamwork
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
  */
-
-use Illuminate\Support\Facades\Config;
-
 trait TeamworkTeamInviteTrait
 {
     /**
      * Has-One relations with the team model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function team()
+    public function team(): HasOne
     {
-        return $this->hasOne( Config::get( 'teamwork.team_model' ), 'id', 'team_id' );
+        return $this->hasOne(Config::get('teamwork.team_model'), 'id', 'team_id');
     }
 
     /**
      * Has-One relations with the user model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function user()
+    public function user(): HasOne
     {
-        return $this->hasOne( Config::get( 'teamwork.user_model' ), 'email', 'email' );
+        return $this->hasOne(Config::get('teamwork.user_model'), 'email', 'email');
     }
 
     /**
      * Has-One relations with the user model.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function inviter()
+    public function inviter(): HasOne
     {
-        return $this->hasOne( Config::get( 'teamwork.user_model' ), 'id', 'user_id' );
+        return $this->hasOne(Config::get('teamwork.user_model'), 'id', 'user_id');
     }
-
 }

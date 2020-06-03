@@ -33,7 +33,7 @@ Teamwork is the fastest and easiest method to add a User / Team association with
 
 ## Installation
 
-## For Laravel 5.7|5.8|^6.0|^7.0
+## For Laravel ^6.0|^7.0
 
     "oliuz/teamwork": "^7.0"
 
@@ -98,7 +98,7 @@ class User extends Model {
 }
 ```
 
-This will enable the relation with `Team` and add the following methods `teams()`, `ownedTeams()` `currentTeam()`, `invites()`, `isTeamOwner()`, `isOwnerOfTeam($team)`, `attachTeam($team, $pivotData = [])`, `detachTeam($team)`, `attachTeams($teams)`, `detachTeams($teams)`, `switchTeam($team)` within your `User` model.
+This will enable the relation with `Team` and add the following methods `teams()`, `ownedTeams()` `currentTeam()`, `invites()`, `isTeamOwner()`, `isOwnerOfTeam($team)`, `attachTeam($team, $pivotData = [])`, `detachTeam($team)`, `attachTeams($teams)`, `detachTeams($teams)`, `switchTeam($team)`, `isOwnerAuth()`, `isOwnerAuthCheck()`  within your `User` model.
 
 Don't forget to dump composer autoload
 

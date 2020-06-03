@@ -1,10 +1,17 @@
-<?php namespace Mpociot\Teamwork\Contracts;
+<?php
+
+namespace Mpociot\Teamwork\Contracts;
 
 /**
  * This file is part of Teamwork
  *
- * @license MIT
- * @package Teamwork
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
  */
 interface TeamworkUserInterface
 {
@@ -43,7 +50,7 @@ interface TeamworkUserInterface
      * @param mixed $team
      * @return bool
      */
-    public function isOwnerOfTeam( $team );
+    public function isOwnerOfTeam($team);
 
     /**
      * Alias to eloquent many-to-many relation's attach() method.
@@ -51,28 +58,28 @@ interface TeamworkUserInterface
      * @param mixed $team
      * @param array $pivotData
      */
-    public function attachTeam( $team, $pivotData = [] );
+    public function attachTeam($team, $pivotData = []);
 
     /**
      * Alias to eloquent many-to-many relation's detach() method.
      *
      * @param mixed $team
      */
-    public function detachTeam( $team );
+    public function detachTeam($team);
 
     /**
      * Attach multiple teams to a user
      *
      * @param mixed $teams
      */
-    public function attachTeams( $teams );
+    public function attachTeams($teams);
 
     /**
      * Detach multiple teams from a user
      *
      * @param mixed $teams
      */
-    public function detachTeams( $teams );
+    public function detachTeams($teams);
 
     /**
      * Switch the current team of the user
@@ -81,5 +88,5 @@ interface TeamworkUserInterface
      * @throws ModelNotFoundException
      * @throws UserNotInTeamException
      */
-    public function switchTeam( $team );
+    public function switchTeam($team);
 }

@@ -2,10 +2,10 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
+use App\Http\Controllers\Controller;
+use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
+use {{namespace}}Http\Requests\Teamwork\TeamUpdateRequest;
 
 class TeamController extends Controller
 {
@@ -17,7 +17,7 @@ class TeamController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -28,7 +28,7 @@ class TeamController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -38,8 +38,8 @@ class TeamController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  {{namespace}}Http\Requests\Teamwork\TeamCreateRequest $request
-     * @return \Illuminate\Http\Response
+     * @param  TeamStoreRequest $request
+     * @return \Illuminate\Routing\Redirector
      */
     public function store(TeamStoreRequest $request)
     {
@@ -57,29 +57,10 @@ class TeamController extends Controller
     }
 
     /**
-     * Switch to the given team.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function switchTeam($id)
-    {
-        $teamModel = config('teamwork.team_model');
-        $team = $teamModel::findOrFail($id);
-        try {
-            auth()->user()->switchTeam($team);
-        } catch ( UserNotInTeamException $e ) {
-            abort(403);
-        }
-
-        return redirect(route('teams.index'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit($id)
     {
@@ -96,11 +77,11 @@ class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  {{namespace}}Http\Requests\Teamwork\TeamStoreRequest $request
+     * @param  TeamUpdateRequest $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Routing\Redirector
      */
-    public function update(TeamStoreRequest $request, $id)
+    public function update(TeamUpdateRequest $request, $id)
     {
         $teamModel = config('teamwork.team_model');
 
@@ -116,7 +97,7 @@ class TeamController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Routing\Redirector
      */
     public function destroy($id)
     {
@@ -135,5 +116,4 @@ class TeamController extends Controller
 
         return redirect(route('teams.index'));
     }
-
 }

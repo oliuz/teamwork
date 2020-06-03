@@ -1,7 +1,20 @@
-<?php namespace Mpociot\Teamwork\Exceptions;
+<?php
+
+namespace Mpociot\Teamwork\Exceptions;
 
 use RuntimeException;
 
+/**
+ * This file is part of Teamwork
+ *
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
+ */
 class UserNotInTeamException extends RuntimeException
 {
 
@@ -15,7 +28,7 @@ class UserNotInTeamException extends RuntimeException
     /**
      * Set the affected team
      *
-     * @param  string   $team
+     * @param string $team
      * @return $this
      */
     public function setTeam($team)

@@ -1,15 +1,21 @@
-<?php namespace Mpociot\Teamwork\Traits;
+<?php
 
-/**
- * This file is part of Teamwork
- *
- * @license MIT
- * @package Teamwork
- */
+namespace Mpociot\Teamwork\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * This file is part of Teamwork
+ *
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
+ */
 trait TeamworkTeamTrait
 {
 
@@ -19,9 +25,9 @@ trait TeamworkTeamTrait
      */
     public function invites()
     {
-        return $this->hasMany( Config::get('teamwork.invite_model'), 'team_id', 'id');
+        return $this->hasMany(Config::get('teamwork.invite_model'), 'team_id', 'id');
     }
-    
+
     /**
      * Many-to-Many relations with the user model.
      *
@@ -29,7 +35,9 @@ trait TeamworkTeamTrait
      */
     public function users()
     {
-        return $this->belongsToMany(Config::get('teamwork.user_model'), Config::get('teamwork.team_user_table'), 'team_id','user_id')->withTimestamps();
+        return $this->belongsToMany(Config::get('teamwork.user_model'),
+            Config::get('teamwork.team_user_table'), 'team_id', 'user_id')
+            ->withTimestamps();
     }
 
     /**
@@ -40,8 +48,8 @@ trait TeamworkTeamTrait
      */
     public function owner()
     {
-        $userModel   = Config::get( 'teamwork.user_model' );
-        $userKeyName = ( new $userModel() )->getKeyName();
+        $userModel = Config::get('teamwork.user_model');
+        $userKeyName = (new $userModel())->getKeyName();
         return $this->belongsTo(Config::get('teamwork.user_model'), "owner_id", $userKeyName);
     }
 
@@ -52,9 +60,24 @@ trait TeamworkTeamTrait
      * @param Model $user
      * @return bool
      */
-    public function hasUser( Model $user )
+    public function hasUser(Model $user)
     {
-        return $this->users()->where( $user->getKeyName(), "=", $user->getKey() )->first() ? true : false;
+        return $this->users()->where($user->getKeyName(), "=", $user->getKey())->first() ? true : false;
     }
 
+    /**
+     * @return bool
+     */
+    public function isOwnerAuth()
+    {
+        return $this->owner_id === auth()->id();
+    }
+
+    /**
+     * @return string
+     */
+    public function isOwnerAuthCheck()
+    {
+        return $this->isOwnerAuth() ? 'Owner' : 'Member';
+    }
 }

@@ -3,10 +3,9 @@
 namespace {{namespace}}Http\Controllers\Teamwork;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
 use Mpociot\Teamwork\Facades\Teamwork;
-use Mpociot\Teamwork\TeamInvite;
 
 class TeamMemberController extends Controller
 {
@@ -54,41 +53,6 @@ class TeamMemberController extends Controller
         $user->detachTeam($team);
 
         return redirect(route('teams.index'));
-    }
-
-    /**
-     * @param Request $request
-     * @param int $team_id
-     * @return $this
-     */
-     public function invite(Request $request, $team_id)
-    {
-        $teamModel = config('teamwork.team_model');
-        $team = $teamModel::findOrFail($team_id);
-
-        if ($request->email <> $team->owner->email){
-            if( !Teamwork::hasPendingInvite( $request->email, $team) )
-            {
-                Teamwork::inviteToTeam( $request->email, $team, function( $invite )
-                {
-                    Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
-                        $m->to($invite->email)->subject('Invitation to join team '.$invite->team->name);
-                    });
-                    // Send email to user
-                });
-            } else {
-                return redirect()->back()->withErrors([
-                    'email' => 'The email address is already invited to the team.'
-                ]);
-            }
-        }else {
-            return redirect()->back()->withErrors([
-                'email' => 'The email address belongs to the team owner. Please, use another one!'
-            ]);
-        }
-
-
-        return redirect(route('teams.members.show', $team->id));
     }
 
     /**

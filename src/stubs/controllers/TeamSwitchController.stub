@@ -1,0 +1,27 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Teamwork;
+
+use Mpociot\Teamwork\TeamworkTeam;
+use App\Http\Controllers\Controller;
+use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
+
+class TeamSwitchController extends Controller
+{
+
+    /**
+     * Switch to the given team.
+     * @param TeamworkTeam $team
+     * @return \Illuminate\Routing\Redirector
+     */
+    public function __invoke(TeamworkTeam $team)
+    {
+        try {
+            auth()->user()->switchTeam($team);
+        } catch ( UserNotInTeamException $e ) {
+            abort(403);
+        }
+
+        return redirect(route('teams.index'));
+    }
+}

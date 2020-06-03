@@ -27,7 +27,7 @@
                                 <small class="text-muted">{{ $user->created_at->diffForHumans() }}</small>
                             </td>
                             <td>
-                                @if(auth()->user()->isOwnerOfTeam($team))
+                                @if($team->isOwnerAuth())
                                     @if(auth()->user()->getKey() !== $user->getKey())
                                         <form style="display: inline-block;"
                                               action="{{route('teams.members.destroy', [$team, $user])}}"
@@ -45,72 +45,74 @@
                     @endforeach
                 </table>
             </div>
+            @if($team->isOwnerAuth())
+                <div class="col-md-4">
+                    <small class="text-muted">Invite to team </small>
+                    <small class="font-weight-bold">{{ $team->name }}</small>
+                    <form class="form-horizontal" method="post" action="{{ route('teams.members.invite', $team) }}">
+                        @csrf
+                        <div class="form-group">
+                            <label class="control-label">E-Mail Address</label>
 
-            <div class="col-md-4">
-                <small class="text-muted">Invite to team </small>
-                <small class="font-weight-bold">{{ $team->name }}</small>
-                <form class="form-horizontal" method="post" action="{{ route('teams.members.invite', $team) }}">
-                    @csrf
-                    <div class="form-group">
-                        <label class="control-label">E-Mail Address</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                   name="email" value="{{ old('email') }}">
 
-                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                               name="email" value="{{ old('email') }}">
+                            @error('email')
+                            <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                            @enderror
 
-                        @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fa fa-btn fa-envelope-o"></i> Invite to Team
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <small class="text-muted">Pending invitations</small>
-                <table class="table table-striped">
-                    @if ($team->invites->count())
-                        <thead class="thead-dark">
-                        <tr>
-                            <th>E-Mail</th>
-                            <th>Sent</th>
-                            <th>Action</th>
-                        </tr>
-                        </thead>
-                    @endif
-
-                    @forelse($team->invites as $invite)
-                        <tr>
-                            <td>{{ $invite->email }}</td>
-                            <td>
-                                <small class="text-muted">{{ $invite->created_at->diffForHumans() }}</small>
-                            </td>
-                            <td>
-                                <a href="{{ route('teams.members.resend_invite', $invite) }}"
-                                   class="btn btn-sm btn-default">
-                                    <i class="fa fa-envelope-o"></i> Resend invite
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <div class="jumbotron jumbotron-fluid text-center">
-                            <div class="container">
-                                <h1 class="display-4">Oh!</h1>
-                                <p class="lead">You don't have pending invitations!</p>
-                            </div>
                         </div>
-                    @endforelse
-                </table>
-            </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-btn fa-envelope-o"></i> Invite to Team
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            @endif
         </div>
+        @if($team->isOwnerAuth())
+            <div class="row justify-content-center">
+                <div class="col-md-12">
+                    <small class="text-muted">Pending invitations</small>
+                    <table class="table table-striped">
+                        @if ($team->invites->count())
+                            <thead class="thead-dark">
+                            <tr>
+                                <th>E-Mail</th>
+                                <th>Sent</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                        @endif
+
+                        @forelse($team->invites as $invite)
+                            <tr>
+                                <td>{{ $invite->email }}</td>
+                                <td>
+                                    <small class="text-muted">{{ $invite->created_at->diffForHumans() }}</small>
+                                </td>
+                                <td>
+                                    <a href="{{ route('teams.members.resend_invite', $invite) }}"
+                                       class="btn btn-sm btn-default">
+                                        <i class="fa fa-envelope-o"></i> Resend invite
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <div class="jumbotron jumbotron-fluid text-center">
+                                <div class="container">
+                                    <h1 class="display-4">Oh!</h1>
+                                    <p class="lead">You don't have pending invitations!</p>
+                                </div>
+                            </div>
+                        @endforelse
+                    </table>
+                </div>
+            </div>
+        @endif
     </div>
 @endsection
-

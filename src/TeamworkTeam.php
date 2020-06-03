@@ -1,9 +1,15 @@
-<?php namespace Mpociot\Teamwork;
+<?php
+
+namespace Mpociot\Teamwork;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
+use Mpociot\Teamwork\Traits\TeamworkTeamTrait;
 
 /**
  * This file is part of Teamwork
  *
- * PHP version 7.1
+ * PHP version 7.2
  *
  * @category PHP
  * @package  Teamwork
@@ -11,12 +17,6 @@
  * @license  MIT
  * @link     http://github.com/mpociot/teamwork
  */
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
-use Mpociot\Teamwork\Traits\TeamworkTeamTrait;
-
-
 class TeamworkTeam extends Model
 {
     use TeamworkTeamTrait;
@@ -38,9 +38,9 @@ class TeamworkTeam extends Model
      *
      * @param array $attributes
      */
-    public function __construct( array $attributes = [ ] )
+    public function __construct(array $attributes = [])
     {
-        parent::__construct( $attributes );
-        $this->table = Config::get( 'teamwork.teams_table' );
+        parent::__construct($attributes);
+        $this->table = Config::get('teamwork.teams_table');
     }
 }

@@ -5,6 +5,17 @@ namespace Mpociot\Teamwork\Commands;
 use Illuminate\Console\Command;
 use Mpociot\Teamwork\Traits\DetectNamespace;
 
+/**
+ * This file is part of Teamwork
+ *
+ * PHP version 7.2
+ *
+ * @category PHP
+ * @package  Teamwork
+ * @author   Marcel Pociot <m.pociot@gmail.com>
+ * @license  MIT
+ * @link     http://github.com/mpociot/teamwork
+ */
 class MakeTeamwork extends Command
 {
 
@@ -70,6 +81,18 @@ class MakeTeamwork extends Command
             file_put_contents(
                 app_path('Http/Controllers/Teamwork/AuthController.php'),
                 $this->compileControllerStub('AuthController')
+            );
+
+            $this->info('Installed TeamSwitchController.');
+            file_put_contents(
+                app_path('Http/Controllers/Teamwork/TeamSwitchController.php'),
+                $this->compileControllerStub('TeamSwitchController')
+            );
+
+            $this->info('Installed TeamInviteController.');
+            file_put_contents(
+                app_path('Http/Controllers/Teamwork/TeamInviteController.php'),
+                $this->compileControllerStub('TeamInviteController')
             );
 
             $this->info('Installed JoinTeamListener');
