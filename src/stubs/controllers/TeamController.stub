@@ -114,6 +114,6 @@ class TeamController extends Controller
         $userModel::where('current_team_id', $id)
                     ->update(['current_team_id' => null]);
 
-        return redirect(route('teams.index'))->with('success', 'Team deleted successfully!');
+        return redirect(route('teams.index'))->with('success', 'Team has deleted successfully!');
     }
 }

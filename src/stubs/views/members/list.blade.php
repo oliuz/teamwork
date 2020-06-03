@@ -98,8 +98,21 @@
                                 <td>
                                     <a href="{{ route('teams.members.resend_invite', $invite) }}"
                                        class="btn btn-sm btn-default">
-                                        <i class="fa fa-envelope-o"></i> Resend invite
+                                        <i class="fa fa-envelope-o"></i>
+                                        Resend invite
                                     </a>
+                                    <form style="display: inline-block;"
+                                          action="{{ route('teams.members.invite_destroy', $invite) }}"
+                                          method="POST">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-link btn-sm text-black-50"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Delete Invite">
+                                            <i class="fas fa-trash"></i>
+                                            Delete Invite
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

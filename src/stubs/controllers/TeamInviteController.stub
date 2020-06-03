@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Mpociot\Teamwork\Facades\Teamwork;
 use {{namespace}}Mail\Teamwork\TeamInviteMember;
+use {{namespace}}Mail\Teamwork\TeamResendInvite;
 use {{namespace}}Http\Requests\Teamwork\TeamInviteRequest;
 
 class TeamInviteController extends Controller
@@ -16,7 +17,7 @@ class TeamInviteController extends Controller
      * @param TeamworkTeam $team
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function __invoke(TeamInviteRequest $request, TeamworkTeam $team)
+    public function store(TeamInviteRequest $request, TeamworkTeam $team)
     {
         if ($request->email !== $team->owner->email) {
             if (!Teamwork::hasPendingInvite($request->email, $team)) {
@@ -35,5 +36,33 @@ class TeamInviteController extends Controller
         }
 
         return redirect(route('teams.members.show', $team->id))->with('success', "The invitation for the {$request->email} has been sent successfully");
+    }
+
+    /**
+     * Resend an invitation mail.
+     *
+     * @param TeamInvite $invite
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(TeamInvite $invite)
+    {
+        Mail::to($invite->email)->queue(new TeamResendInvite($invite));
+
+        return redirect(route('teams.members.show', $invite->team))
+            ->with('success', "The invitation for the {$invite->email} has been forwarded!");
+    }
+
+    /**
+     * Delete invitation for user
+     *
+     * @param TeamInvite $invite
+     * @return RedirectResponse
+     * @throws Exception
+     */
+    public function destroy(TeamInvite $invite)
+    {
+        $invite->delete();
+
+        return redirect()->back()->with('success', 'The invitation has deleted successfully!');
     }
 }
