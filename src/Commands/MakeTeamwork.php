@@ -96,6 +96,12 @@ class MakeTeamwork extends Command
                 $this->compileControllerStub('TeamInviteController')
             );
 
+            $this->info('Installed TeamResendInviteController.');
+            file_put_contents(
+                app_path('Http/Controllers/Teamwork/TeamResendInviteController.php'),
+                $this->compileControllerStub('TeamResendInviteController')
+            );
+
             $this->info('Installed JoinTeamListener');
             file_put_contents(
                 app_path('Listeners/Teamwork/JoinTeamListener.php'),
