@@ -75,29 +75,6 @@
                     </tbody>
                 </table>
             </div>
-            <div hidden class="col-md-4">
-                <small class="text-muted">Create a new team</small>
-                <form class="form-horizontal" method="POST" action="{{route('teams.store')}}">
-                    @csrf
-                    <div class="form-group">
-                        <label class="control-label">Name</label>
-
-                        <input id="team-name" type="text" class="form-control @error('name') is-invalid @enderror"
-                               name="name" value="{{ old('name') }}" required>
-
-                        @error('name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-
-                    </div>
-
-                    <div class="form-group">
-                        <button class="btn btn-primary btn-block">Save</button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 

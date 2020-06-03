@@ -3,6 +3,7 @@
 namespace {{namespace}}Http\Controllers\Teamwork;
 
 use Illuminate\Support\Str;
+use Mpociot\Teamwork\TeamworkTeam;
 use App\Http\Controllers\Controller;
 use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
 use {{namespace}}Http\Requests\Teamwork\TeamUpdateRequest;
@@ -59,10 +60,10 @@ class TeamController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param  TeamworkTeam $team
      * @return \Illuminate\View\View
      */
-    public function edit($id)
+    public function edit(TeamworkTeam $team)
     {
         $teamModel = config('teamwork.team_model');
         $team = $teamModel::findOrFail($id);
@@ -78,10 +79,10 @@ class TeamController extends Controller
      * Update the specified resource in storage.
      *
      * @param  TeamUpdateRequest $request
-     * @param  int $id
+     * @param  TeamworkTeam $team
      * @return \Illuminate\Routing\Redirector
      */
-    public function update(TeamUpdateRequest $request, $id)
+    public function update(TeamUpdateRequest $request, TeamworkTeam $team)
     {
         $teamModel = config('teamwork.team_model');
 
@@ -96,14 +97,11 @@ class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  TeamworkTeam $team
      * @return \Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(TeamworkTeam $team)
     {
-        $teamModel = config('teamwork.team_model');
-
-        $team = $teamModel::findOrFail($id);
         if (!auth()->user()->isOwnerOfTeam($team)) {
             abort(403);
         }

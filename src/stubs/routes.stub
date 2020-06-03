@@ -8,16 +8,16 @@ Route::group(['prefix' => 'teams', 'namespace' => 'Teamwork'], function()
     Route::get('/', 'TeamController@index')->name('teams.index');
     //Route::get('create', 'TeamController@create')->name('teams.create');
     Route::post('teams', 'TeamController@store')->name('teams.store');
-    Route::get('edit/{id}', 'TeamController@edit')->name('teams.edit');
-    Route::put('edit/{id}', 'TeamController@update')->name('teams.update');
-    Route::delete('destroy/{id}', 'TeamController@destroy')->name('teams.destroy');
+    Route::get('edit/{team}', 'TeamController@edit')->name('teams.edit');
+    Route::put('edit/{team}', 'TeamController@update')->name('teams.update');
+    Route::delete('destroy/{team}', 'TeamController@destroy')->name('teams.destroy');
     Route::get('switch/{team}', 'TeamSwitchController')->name('teams.switch');
 
-    Route::get('members/{id}', 'TeamMemberController@show')->name('teams.members.show');
+    Route::get('members/{team}', 'TeamMemberController@show')->name('teams.members.show');
     Route::post('members/{team}', 'TeamInviteController@store')->name('teams.members.invite');
     Route::get('members/resend/{invite}', 'TeamInviteController@update')->name('teams.members.resend_invite');
     Route::delete('members/{invite}', 'TeamInviteController@destroy')->name('teams.members.invite_destroy');
-    Route::delete('members/{id}/{user_id}', 'TeamMemberController@destroy')->name('teams.members.destroy');
+    Route::delete('members/{team}/{user}', 'TeamMemberController@destroy')->name('teams.members.destroy');
 
     Route::get('accept/{token}', 'AuthController')->name('teams.accept_invite');
 });
