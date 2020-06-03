@@ -3,9 +3,7 @@
 namespace {{namespace}}Http\Controllers\Teamwork;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
-use Mpociot\Teamwork\Facades\Teamwork;
 
 class TeamMemberController extends Controller
 {
@@ -18,7 +16,7 @@ class TeamMemberController extends Controller
      * Show the members of the given team.
      *
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show($id)
     {
@@ -33,7 +31,7 @@ class TeamMemberController extends Controller
      *
      * @param int $team_id
      * @param int $user_id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      * @internal param int $id
      */
     public function destroy($team_id, $user_id)
@@ -54,21 +52,4 @@ class TeamMemberController extends Controller
 
         return redirect(route('teams.index'));
     }
-
-    /**
-     * Resend an invitation mail.
-     * 
-     * @param $invite_id
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function resendInvite($invite_id)
-    {
-        $invite = TeamInvite::findOrFail($invite_id);
-        Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
-            $m->to($invite->email)->subject('Invitation to join team '.$invite->team->name);
-        });
-
-        return redirect(route('teams.members.show', $invite->team));
-    }
-
 }

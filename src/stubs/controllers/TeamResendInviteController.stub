@@ -1,0 +1,27 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Teamwork;
+
+use Mpociot\Teamwork\TeamInvite;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
+
+class TeamResendInviteController extends Controller
+{
+    /**
+     * Resend an invitation mail.
+     *
+     * @param TeamInvite $invite
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function __invoke(TeamInvite $invite)
+    {
+        Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite],
+            function ($m) use ($invite) {
+                $m->to($invite->email)->subject('Invitation to join team ' . $invite->team->name);
+            });
+
+        return redirect(route('teams.members.show', $invite->team))
+            ->with('success', "The invitation for the {$invite->email} has been forwarded!");
+    }
+}
