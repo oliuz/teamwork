@@ -22,6 +22,6 @@ class TeamSwitchController extends Controller
             abort(403);
         }
 
-        return redirect(route('teams.index'));
+        return redirect(route('teams.index'))->with('success', "{$team->name} Team switched successfully!");
     }
 }

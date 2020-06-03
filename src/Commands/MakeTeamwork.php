@@ -41,6 +41,7 @@ class MakeTeamwork extends Command
         'create.blade.php' => 'teamwork/create.blade.php',
         'edit.blade.php' => 'teamwork/edit.blade.php',
         'index.blade.php' => 'teamwork/index.blade.php',
+        'includes/messages.blade.php' => 'teamwork/includes/messages.blade.php'
     ];
 
     /**
@@ -111,6 +112,18 @@ class MakeTeamwork extends Command
                 $this->compileRequestStub('TeamStoreRequest')
             );
 
+            $this->info('Installed TeamUpdateRequest.');
+            file_put_contents(
+                app_path('Http/Requests/Teamwork/TeamUpdateRequest.php'),
+                $this->compileRequestStub('TeamUpdateRequest')
+            );
+
+            $this->info('Installed TeamInviteRequest.');
+            file_put_contents(
+                app_path('Http/Requests/Teamwork/TeamInviteRequest.php'),
+                $this->compileRequestStub('TeamInviteRequest')
+            );
+
             $this->info('Updated Routes File.');
             file_put_contents(
                // app_path('Http/routes.php'),
@@ -155,6 +168,9 @@ class MakeTeamwork extends Command
         }
         if (! is_dir(base_path('resources/views/teamwork/members'))) {
             mkdir(base_path('resources/views/teamwork/members'), 0755, true);
+        }
+        if (!is_dir(base_path('resources/views/teamwork/includes'))) {
+            mkdir(base_path('resources/views/teamwork/includes'), 0755, true);
         }
     }
 

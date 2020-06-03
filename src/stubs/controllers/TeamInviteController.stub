@@ -15,10 +15,7 @@ class TeamInviteController extends Controller
      */
     public function __invoke(TeamInviteRequest $request, TeamworkTeam $team)
     {
-        $teamModel = config('teamwork.team_model');
-        $team = $teamModel::findOrFail($team_id);
-
-        if ($request->email <> $team->owner->email){
+        if ($request->email !== $team->owner->email){
             if( !Teamwork::hasPendingInvite( $request->email, $team) )
             {
                 Teamwork::inviteToTeam( $request->email, $team, function( $invite )
@@ -39,6 +36,6 @@ class TeamInviteController extends Controller
             ]);
         }
 
-        return redirect(route('teams.members.show', $team->id));
+        return redirect(route('teams.members.show', $team->id))->with('success', "The invitation for the {$request->email} has been sent successfully");
     }
 }
