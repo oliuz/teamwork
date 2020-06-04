@@ -2,6 +2,8 @@
 
 namespace Mpociot\Teamwork;
 
+use Ramsey\Uuid\Uuid;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Mpociot\Teamwork\Traits\TeamworkTeamTrait;
@@ -31,7 +33,7 @@ class TeamworkTeam extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'owner_id', 'slug'];
+    protected $fillable = ['uuid', 'name', 'owner_id', 'slug'];
 
     /**
      * Creates a new instance of the model.
@@ -42,5 +44,38 @@ class TeamworkTeam extends Model
     {
         parent::__construct($attributes);
         $this->table = Config::get('teamwork.teams_table');
+    }
+
+    /**
+     *
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->uuid = (string)Uuid::uuid1();
+            $model->slug = Str::slug($model->name);
+            $model->owner_id = auth()->user()->getKey();
+        });
+
+        static::updating(function ($model) {
+            $model->uuid = (string)Uuid::uuid1();
+            $model->slug = Str::slug($model->name);
+        });
+
+        static::deleting(function($model) {
+            $userModel = config('teamwork.user_model');
+            $userModel::where('current_team_id', $model)
+                ->update(['current_team_id' => null]);
+        });
+    }
+
+    /**
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 }

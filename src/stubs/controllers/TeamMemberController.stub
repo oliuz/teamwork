@@ -46,6 +46,6 @@ class TeamMemberController extends Controller
 
         $user->detachTeam($team);
 
-        return redirect(route('teams.index'))->with('success', 'Team Member has been deleted successfully!');
+        return redirect(route('teams.members.show', $team))->with('success', 'Team Member has been deleted successfully!');
     }
 }

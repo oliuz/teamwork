@@ -2,7 +2,6 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use Illuminate\Support\Str;
 use Mpociot\Teamwork\TeamworkTeam;
 use App\Http\Controllers\Controller;
 use {{namespace}}Http\Requests\Teamwork\TeamStoreRequest;
@@ -44,14 +43,7 @@ class TeamController extends Controller
      */
     public function store(TeamStoreRequest $request)
     {
-        $teamModel = config('teamwork.team_model');
-
-        $team = $teamModel::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'owner_id' => $request->user()->getKey()
-        ]);
-        $team->slug = Str::slug($request->get('name'));
+        $team = TeamworkTeam::create($request->validated());
         $request->user()->attachTeam($team);
 
         return redirect(route('teams.index'))->with('success', 'Team created successfully!');
@@ -65,9 +57,6 @@ class TeamController extends Controller
      */
     public function edit(TeamworkTeam $team)
     {
-        $teamModel = config('teamwork.team_model');
-        $team = $teamModel::findOrFail($id);
-
         if (!auth()->user()->isOwnerOfTeam($team)) {
             abort(403);
         }
@@ -84,12 +73,7 @@ class TeamController extends Controller
      */
     public function update(TeamUpdateRequest $request, TeamworkTeam $team)
     {
-        $teamModel = config('teamwork.team_model');
-
-        $team = $teamModel::findOrFail($id);
-        $team->name = $request->name;
-        $team->slug = Str::slug($request->name);
-        $team->save();
+        $team->update($request->validated());
 
         return redirect(route('teams.index'))->with('success', 'Team updated successfully!');
     }
@@ -97,21 +81,18 @@ class TeamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  TeamworkTeam $team
+     * @param TeamworkTeam $team
      * @return \Illuminate\Routing\Redirector
+     * @throws \Exception
      */
     public function destroy(TeamworkTeam $team)
     {
-        if (!auth()->user()->isOwnerOfTeam($team)) {
-            abort(403);
-        }
+       if (!auth()->user()->isOwnerOfTeam($team)) {
+           abort(403);
+       }
 
-        $team->delete();
+       $team->delete();
 
-        $userModel = config('teamwork.user_model');
-        $userModel::where('current_team_id', $id)
-                    ->update(['current_team_id' => null]);
-
-        return redirect(route('teams.index'))->with('success', 'Team has deleted successfully!');
+       return redirect(route('teams.index'))->with('success', 'Team has deleted successfully!');
     }
 }

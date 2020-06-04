@@ -43,13 +43,13 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{route('teams.members.show', $team)}}" class="btn btn-sm btn-dark">
+                                <a href="{{ route('teams.members.show', $team) }}" class="btn btn-sm btn-dark">
                                     <i class="fa fa-users"></i> Members
                                 </a>
 
                                 @if($team->isOwnerAuth())
 
-                                    <a href="{{route('teams.edit', $team)}}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('teams.edit', $team) }}" class="btn btn-sm btn-primary">
                                         <i class="fa fa-pencil"></i> Edit
                                     </a>
 

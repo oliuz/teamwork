@@ -2,6 +2,7 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
+use Mpociot\Teamwork\TeamInvite;
 use Mpociot\Teamwork\TeamworkTeam;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -35,7 +36,7 @@ class TeamInviteController extends Controller
             ]);
         }
 
-        return redirect(route('teams.members.show', $team->id))->with('success', "The invitation for the {$request->email} has been sent successfully");
+        return redirect(route('teams.members.show', $team))->with('success', "The invitation for the {$request->email} has been sent successfully");
     }
 
     /**
