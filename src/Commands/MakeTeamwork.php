@@ -103,7 +103,7 @@ class MakeTeamwork extends Command
                 str_replace(
                     '{{namespace}}',
                     $this->getAppNamespace(),
-                    file_get_contents(__DIR__ . '/../stubs/listeners/JoinTeamListener.stub')
+                    file_get_contents(__DIR__ . '/../../stubs/listeners/JoinTeamListener.stub')
                 )
             );
 
@@ -141,7 +141,7 @@ class MakeTeamwork extends Command
             file_put_contents(
                // app_path('Http/routes.php'),
                base_path('routes/web.php'),
-                file_get_contents(__DIR__.'/../stubs/routes.stub'),
+                file_get_contents(__DIR__.'/../../routes/routes.stub'),
                 FILE_APPEND
             );
 
@@ -200,7 +200,7 @@ class MakeTeamwork extends Command
         foreach ($this->views as $key => $value) {
             $path = base_path('resources/views/'.$value);
             $this->line('<info>Created View:</info> '.$path);
-            copy(__DIR__.'/../stubs/views/'.$key, $path);
+            copy(__DIR__.'/../../stubs/resources/views/'.$key, $path);
         }
     }
 
@@ -215,7 +215,7 @@ class MakeTeamwork extends Command
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__.'/../stubs/controllers/'.$stubName.'.stub')
+            file_get_contents(__DIR__.'/../../stubs/controllers/'.$stubName.'.stub')
         );
     }
 
@@ -230,7 +230,7 @@ class MakeTeamwork extends Command
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__.'/../stubs/requests/'.$stubName.'.stub')
+            file_get_contents(__DIR__.'/../../stubs/requests/'.$stubName.'.stub')
         );
     }
 
@@ -243,9 +243,9 @@ class MakeTeamwork extends Command
     protected function compileModelStub($stubName)
     {
         return str_replace(
-            '{{namespace}}',
+            '{{ namespace }}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__.'/../stubs/models/'.$stubName.'.stub')
+            file_get_contents(__DIR__.'/../../stubs/models/'.$stubName.'.stub')
         );
     }
 
@@ -260,7 +260,7 @@ class MakeTeamwork extends Command
         return str_replace(
             '{{namespace}}',
             $this->getAppNamespace(),
-            file_get_contents(__DIR__.'/../stubs/mail/'.$stubName.'.stub')
+            file_get_contents(__DIR__.'/../../stubs/mail/'.$stubName.'.stub')
         );
     }
 }

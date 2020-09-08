@@ -2,8 +2,8 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use Mpociot\Teamwork\TeamInvite;
-use Mpociot\Teamwork\TeamworkTeam;
+use Mpociot\Teamwork\Models\TeamInvite;
+use Mpociot\Teamwork\Models\TeamworkTeam;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use Mpociot\Teamwork\Facades\Teamwork;

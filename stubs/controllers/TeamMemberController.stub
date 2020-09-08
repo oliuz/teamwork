@@ -3,7 +3,7 @@
 namespace {{namespace}}Http\Controllers\Teamwork;
 
 use Illuminate\Http\Request;
-use Mpociot\Teamwork\TeamworkTeam;
+use Mpociot\Teamwork\Models\TeamworkTeam;
 use App\Http\Controllers\Controller;
 
 class TeamMemberController extends Controller

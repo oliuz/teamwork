@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpociot\Teamwork;
+namespace Mpociot\Teamwork\Models;
 
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Str;

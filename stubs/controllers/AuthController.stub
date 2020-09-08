@@ -3,7 +3,7 @@
 namespace {{namespace}}Http\Controllers\Teamwork;
 
 use Illuminate\Http\Request;
-use Mpociot\Teamwork\TeamInvite;
+use Mpociot\Teamwork\Models\TeamInvite;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Mpociot\Teamwork\Facades\Teamwork;

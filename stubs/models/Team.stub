@@ -2,7 +2,7 @@
 
 namespace {{namespace}}Models;
 
-use Mpociot\Teamwork\TeamworkTeam;
+use Mpociot\Teamwork\Models\TeamworkTeam;
 
 class Team extends TeamworkTeam
 {

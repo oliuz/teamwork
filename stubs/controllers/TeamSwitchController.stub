@@ -2,7 +2,7 @@
 
 namespace {{namespace}}Http\Controllers\Teamwork;
 
-use Mpociot\Teamwork\TeamworkTeam;
+use Mpociot\Teamwork\Models\TeamworkTeam;
 use App\Http\Controllers\Controller;
 use Mpociot\Teamwork\Exceptions\UserNotInTeamException;
 

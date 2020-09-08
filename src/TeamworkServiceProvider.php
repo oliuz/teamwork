@@ -43,7 +43,7 @@ class TeamworkServiceProvider extends ServiceProvider
     {
         // Publish config files
         $this->publishes([
-            __DIR__ . '/config/config.php' => config_path('teamwork.php'),
+            __DIR__ . '/../config/config.php' => config_path('teamwork.php'),
         ], 'teamwork-config');
     }
 
@@ -56,7 +56,7 @@ class TeamworkServiceProvider extends ServiceProvider
             // Publish the migration
             $timestamp = date('Y_m_d_His', time());
             $this->publishes([
-                __DIR__ . '/database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/' . $timestamp . '_teamwork_setup_tables.php'),
+                __DIR__ . '../database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/' . $timestamp . '_teamwork_setup_tables.php'),
             ], 'teamwork-migrations');
         }
     }
@@ -70,7 +70,7 @@ class TeamworkServiceProvider extends ServiceProvider
             // Publish the migration
             $timestamp = date('Y_m_d_His', time());
             $this->publishes([
-                __DIR__ . '/database/migrations/2020_06_10_182545_add_uuid_in_teams_table.php' => database_path('migrations/' . $timestamp . '_add_uuid_in_teams_table.php'),
+                __DIR__ . '../database/migrations/2020_06_10_182545_add_uuid_in_teams_table.php' => database_path('migrations/' . $timestamp . '_add_uuid_in_teams_table.php'),
             ], 'teamwork-add_uuid_migration');
         }
     }
@@ -121,7 +121,7 @@ class TeamworkServiceProvider extends ServiceProvider
     protected function mergeConfig()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/config/config.php', 'teamwork'
+            __DIR__ . '/../config/config.php', 'teamwork'
         );
     }
 
