@@ -93,4 +93,11 @@ return [
     |
     */
     'team_invites_table' => 'team_invites',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Teamwork team Route Model Binding (e.j. uuid, id, slug)
+    |--------------------------------------------------------------------------
+    */
+    'route_model_binding' => 'id',
 ];

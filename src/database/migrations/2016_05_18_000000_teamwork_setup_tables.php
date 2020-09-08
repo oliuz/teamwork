@@ -21,7 +21,6 @@ class TeamworkSetupTables extends Migration
 
         Schema::create(config('teamwork.teams_table'), function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned();
-            $table->uuid('uuid')->nullable();
             $table->unsignedBigInteger('owner_id')->nullable();
             $table->string('name')->unique();
             $table->string('slug')->unique();

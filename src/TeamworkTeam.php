@@ -64,7 +64,7 @@ class TeamworkTeam extends Model
             $model->slug = Str::slug($model->name);
         });
 
-        static::deleting(function($model) {
+        static::deleting(function ($model) {
             $userModel = config('teamwork.user_model');
             $userModel::where('current_team_id', $model)
                 ->update(['current_team_id' => null]);
@@ -76,6 +76,6 @@ class TeamworkTeam extends Model
      */
     public function getRouteKeyName()
     {
-        return 'uuid';
+        return config('teamwork.route_model_binding', 'id');
     }
 }
