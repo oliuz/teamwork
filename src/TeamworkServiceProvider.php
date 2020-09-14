@@ -2,6 +2,7 @@
 
 namespace Mpociot\Teamwork;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -56,7 +57,7 @@ class TeamworkServiceProvider extends ServiceProvider
             // Publish the migration
             $timestamp = date('Y_m_d_His', time());
             $this->publishes([
-                __DIR__ . '../database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/' . $timestamp . '_teamwork_setup_tables.php'),
+                __DIR__ . '/../database/migrations/2016_05_18_000000_teamwork_setup_tables.php' => database_path('migrations/' . $timestamp . '_teamwork_setup_tables.php'),
             ], 'teamwork-migrations');
         }
     }
@@ -68,9 +69,9 @@ class TeamworkServiceProvider extends ServiceProvider
     {
         if (!class_exists('AddUuidInTeamsTable')) {
             // Publish the migration
-            $timestamp = date('Y_m_d_His', time());
+            $timestamp = DB::raw(now()->addMinutes(3)->format('Y_m_d_His'));
             $this->publishes([
-                __DIR__ . '../database/migrations/2020_06_10_182545_add_uuid_in_teams_table.php' => database_path('migrations/' . $timestamp . '_add_uuid_in_teams_table.php'),
+                __DIR__ . '/../database/migrations/2016_05_18_000001_teamwork_add_uuid_in_teams_table.php' => database_path('migrations/' . $timestamp . '_teamwork_add_uuid_in_teams_table.php'),
             ], 'teamwork-add_uuid_migration');
         }
     }

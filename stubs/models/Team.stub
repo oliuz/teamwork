@@ -1,10 +1,10 @@
 <?php
 
-namespace {{namespace}}Models;
+namespace App\Models;
 
 use Mpociot\Teamwork\Models\TeamworkTeam;
 
 class Team extends TeamworkTeam
 {
-     
+
 }

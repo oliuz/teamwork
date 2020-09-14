@@ -141,7 +141,7 @@ class MakeTeamwork extends Command
             file_put_contents(
                // app_path('Http/routes.php'),
                base_path('routes/web.php'),
-                file_get_contents(__DIR__.'/../../routes/routes.stub'),
+                file_get_contents(__DIR__.'/../../routes/routes.php'),
                 FILE_APPEND
             );
 

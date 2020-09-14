@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddUuidInTeamsTable extends Migration
+class TeamworkAddUuidInTeamsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddUuidInTeamsTable extends Migration
      */
     public function up()
     {
-        Schema::table(config('teamwork.team_user_table'), function (Blueprint $table) {
-            $table->uuid('uuid')->nullable();
+        Schema::table(config('teamwork.teams_table'), function (Blueprint $table) {
+            $table->uuid('uuid')->nullable()->after('id');
         });
     }
 
@@ -25,7 +25,7 @@ class AddUuidInTeamsTable extends Migration
      */
     public function down()
     {
-        Schema::table(config('teamwork.team_user_table'), function (Blueprint $table) {
+        Schema::table(config('teamwork.teams_table'), function (Blueprint $table) {
             $table->dropColumn('uuid');
         });
     }
