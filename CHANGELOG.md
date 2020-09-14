@@ -1,5 +1,8 @@
 # Changelog
 
+#### v8.0.1 `2020-07-14`
+- Error in teams migration has been solved.
+
 #### v8.0 `2020-07-14`
 - Laravel 8 support.
 
