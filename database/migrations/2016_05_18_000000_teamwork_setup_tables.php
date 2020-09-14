@@ -14,7 +14,7 @@ class TeamworkSetupTables extends Migration
     public function up()
     {
         Schema::table(config('teamwork.users_table'), function (Blueprint $table) {
-            $table->unsignedBigInteger('current_team_id')
+            $table->unsignedBigInteger('current_team')
                 ->nullable()
                 ->after('id');
         });
