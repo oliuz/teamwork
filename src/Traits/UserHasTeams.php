@@ -39,7 +39,7 @@ trait UserHasTeams
      */
     public function currentTeam()
     {
-        return $this->hasOne(Config::get('teamwork.team_model'), 'id', 'current_team');
+        return $this->hasOne(Config::get('teamwork.team_model'), 'id', config('teamwork.current_team'));
     }
 
     /**
@@ -139,12 +139,13 @@ trait UserHasTeams
     public function attachTeam($team, $pivotData = [])
     {
         $team = $this->retrieveTeamId($team);
+        $current_team_id = config('teamwork.current_team');
         /**
          * If the user has no current team,
          * use the attached one
          */
-        if (is_null($this->current_team)) {
-            $this->current_team = $team;
+        if (is_null($this->$current_team_id)) {
+            $this->$current_team_id = $team;
             $this->save();
 
             if ($this->relationLoaded('currentTeam')) {
@@ -176,6 +177,7 @@ trait UserHasTeams
      */
     public function detachTeam($team)
     {
+        $current_team_id = config('teamwork.current_team');
         $team = $this->retrieveTeamId($team);
         $this->teams()->detach($team);
 
@@ -189,8 +191,8 @@ trait UserHasTeams
          * If the user has no more teams,
          * unset the current_team_id
          */
-        if ($this->teams()->count() === 0 || $this->current_team === $team) {
-            $this->current_team = null;
+        if ($this->teams()->count() === 0 || $this->$current_team_id === $team) {
+            $this->$current_team_id = null;
             $this->save();
 
             if ($this->relationLoaded('currentTeam')) {
@@ -239,6 +241,8 @@ trait UserHasTeams
      */
     public function switchTeam($team)
     {
+        $current_team_id = config('teamwork.current_team');
+
         if ($team !== 0 && $team !== null) {
             $team = $this->retrieveTeamId($team);
             $teamModel = Config::get('teamwork.team_model');
@@ -254,7 +258,7 @@ trait UserHasTeams
                 throw $exception;
             }
         }
-        $this->current_team = $team;
+        $this->$current_team_id = $team;
         $this->save();
 
         if ($this->relationLoaded('currentTeam')) {
