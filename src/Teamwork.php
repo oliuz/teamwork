@@ -57,7 +57,8 @@ class Teamwork
     public function inviteToTeam($user, $team = null, callable $success = null)
     {
         if (is_null($team)) {
-            $team = $this->user()->current_team_id;
+            $currentTeamId = config('teamwork.current_team');
+            $team = $this->user()->$currentTeamId;
         } elseif (is_object($team)) {
             $team = $team->getKey();
         } elseif (is_array($team)) {

@@ -14,7 +14,7 @@ class TeamworkSetupTables extends Migration
     public function up()
     {
         Schema::table(config('teamwork.users_table'), function (Blueprint $table) {
-            $table->unsignedBigInteger('current_team')
+            $table->unsignedBigInteger(config('teamwork.current_team'))
                 ->nullable()
                 ->after('id');
         });
@@ -71,7 +71,7 @@ class TeamworkSetupTables extends Migration
     public function down()
     {
         Schema::table(config('teamwork.users_table'), function (Blueprint $table) {
-            $table->dropColumn('current_team_id');
+            $table->dropColumn(config('teamwork.current_team'));
         });
 
         Schema::table(config('teamwork.team_user_table'), function (Blueprint $table) {
