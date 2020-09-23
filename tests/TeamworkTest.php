@@ -149,7 +149,8 @@ class TeamworkTest extends Orchestra\Testbench\TestCase
         \Teamwork::acceptInvite( $invite );
 
         $this->assertCount(1, $this->user->teams);
-        $this->assertEquals($team->getKey(), $this->user->current_team_id);
+        $currentTeamId = config('teamwork.current_team');
+        $this->assertEquals($team->getKey(), $this->user->$currentTeamId);
 
         $this->assertNull(TeamInvite::find($invite->getKey()));
     }
@@ -263,7 +264,7 @@ class TeamworkTest extends Orchestra\Testbench\TestCase
             'team_id' => $team->getKey()
         ]);
     }
-    
+
     public function testInviteToTeamFiresEvent()
     {
         $team = TeamworkTeam::create(['name' => 'Test-Team 1']);

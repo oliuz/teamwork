@@ -65,9 +65,10 @@ class TeamworkTeam extends Model
         });
 
         static::deleting(function ($model) {
+            $currentTeamId = config('teamwork.current_team');
             $userModel = config('teamwork.user_model');
-            $userModel::where('current_team_id', $model)
-                ->update(['current_team_id' => null]);
+            $userModel::where($currentTeamId, $model)
+                ->update([$currentTeamId => null]);
         });
     }
 

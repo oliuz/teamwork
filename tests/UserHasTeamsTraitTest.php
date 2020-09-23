@@ -60,7 +60,8 @@ class UserHasTeamsTraitTest extends Orchestra\Testbench\TestCase
         $user->save();
 
         $this->assertCount(0, $user->teams);
-        $this->assertEquals(0, $user->current_team_id);
+        $currentTeamId = config('teamwork.current_team');
+        $this->assertEquals(0, $user->$currentTeamId);
         $this->assertNull($user->currentTeam);
         $this->assertCount(0, $user->ownedTeams);
         $this->assertCount(0, $user->invites);
