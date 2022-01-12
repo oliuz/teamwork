@@ -56,7 +56,7 @@ class TeamworkTeam extends Model
         static::creating(function ($model) {
             $model->uuid = (string)Uuid::uuid1();
             $model->slug = Str::slug($model->name);
-            $model->owner_id = auth()->user()->getKey();
+            $model->owner_id = $model->owner_id ?? auth()->user()->getKey();
         });
 
         static::updating(function ($model) {
