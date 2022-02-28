@@ -1,29 +1,31 @@
-<div class="modal fade" id="createModalCenter" tabindex="-1" role="dialog"
-     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="createModalCenter" tabindex="-1" aria-labelledby="createModalCenter" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create a new team</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <form class="form-horizontal" method="POST" action="{{route('teams.store', '#create')}}">
-                @csrf
                 <div class="modal-body">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h5 class="modal-title mb-3" id="exampleModalCenterTitle">Create a new team</h5>
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
 
-                    <div class="form-group">
+                            <input id="team-name" type="text" class="form-control @error('name') is-invalid @enderror"
+                                   name="name" value="{{ old('name') }}" placeholder="Enter name" required>
 
-                        <input id="team-name" type="text" class="form-control @error('name') is-invalid @enderror"
-                               name="name" value="{{ old('name') }}" placeholder="Enter name" required>
+                            @error('name')
+                            <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                            @enderror
 
-                        @error('name')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-
+                        </div>
                     </div>
-                    <button class="btn btn-primary btn-block btn-lg">Save</button>
-
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>

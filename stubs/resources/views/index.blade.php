@@ -8,8 +8,8 @@
                 <h3>
                     Teams
                     <div class="btn-group float-right" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
-                                data-target="#createModalCenter">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#createModalCenter">
                             <i class="fa fa-plus"></i> Create team
                         </button>
                     </div>
